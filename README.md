@@ -21,7 +21,7 @@ Convert it to Base64:
 
 	$ bsource=$(echo $source | base64 -w0)
 
-Run the docker container given the base64 source as
+Run the docker container passing the base64 source as
 command line parameter:
 
 	$ docker run --rm stonemaster/dlang-tour-rdmd $bsource
