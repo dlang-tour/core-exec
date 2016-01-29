@@ -8,6 +8,9 @@ tries to compile the source and, if successful, outputs
 the program's output. Compiler errors will also be output,
 to stderr.
 
+This container is used in the [dlang-tour](https://github.com/stonemaster/dlang-tour)
+to support online compilation of user code in a safe sandbox.
+
 ## Usage
 
 Given a source code:
