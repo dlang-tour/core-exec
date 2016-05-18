@@ -3,4 +3,4 @@
 cd /sandbox
 echo "$*" | base64 -d > onlineapp.d
 
-exec rdmd onlineapp.d
+exec timeout -s KILL ${TIMEOUT:-20} rdmd onlineapp.d
