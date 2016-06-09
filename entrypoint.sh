@@ -1,5 +1,9 @@
 #!/bin/bash
 
+set -e
+set -u
+set -o pipefail
+
 cd /sandbox
 echo "$*" | base64 -d > onlineapp.d
 
