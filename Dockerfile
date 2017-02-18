@@ -3,7 +3,7 @@ FROM ubuntu:16.04
 MAINTAINER "André Stein <andre.stein.1985@gmail.com>"
 
 # Version updates here
-ENV VERSION "2.071.0"
+ENV VERSION "2.074.0"
 
 RUN apt-get update && apt-get install --no-install-recommends -y wget libc6-dev xdg-utils gcc libcurl3  && \
     wget http://downloads.dlang.org/releases/2.x/${VERSION}/dmd_${VERSION}-0_amd64.deb -O /dmd.deb && \
