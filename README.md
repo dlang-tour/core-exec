@@ -27,6 +27,10 @@ command line parameter:
 	$ docker run --rm stonemaster/dlang-tour-rdmd $bsource
 	Hello World
 
+## Docker image
+
+The docker image gets built after every push to `master` and pushed to [DockerHub](https://hub.docker.com/r/stonemaster/dlang-tour-rdmd/).
+
 ## License
 
 Boost license.
