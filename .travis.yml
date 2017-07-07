@@ -4,8 +4,16 @@ services:
   - docker
 
 script:
-  - docker build -t dlang-tour/dlang-tour-exec:dmd-nightly .
+  - |
+      for version in dmd-nightly dmd-beta dmd ldc-beta ldc gdc ; do
+        docker build -t dlang-tour/dlang-tour-exec:$version .
+        sed "s/DLANG_VERSION \".*\"/DLANG_VERSION \"$version\"/" -i Dockerfile
+      done
 
 after_success:
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-  - docker push dlang-tour/dlang-tour-exec:dmd-nightly
+  - |
+      for version in dmd-nightly dmd-beta dmd ldc-beta ldc gdc ; do
+        docker push dlang-tour/dlang-tour-exec:${version}
+      done
+

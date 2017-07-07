@@ -19,9 +19,9 @@ RUN apt-get update && apt-get install --no-install-recommends -y libc-dev gcc cu
  && chmod 555 -R /dlang
 
 ENV \
-  PATH=/dlang/dmd-nightly/linux/bin64:${PATH} \
-  LD_LIBRARY_PATH=/dlang/${DLANG_VERSION}/linux/lib64 \
-  LIBRARY_PATH=/dlang/${DLANG_VERSION}/linux/lib64
+  PATH=/dlang/${DLANG_VERSION}/linux/bin64:$/dlang/${DLANG_VERSION}/bin:{PATH} \
+  LD_LIBRARY_PATH=/dlang/${DLANG_VERSION}/linux/lib64:/dlang/${DLANG_VERSION}/lib \
+  LIBRARY_PATH=/dlang/${DLANG_VERSION}/linux/lib64:/dlang/${DLANG_VERSION}/lib
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
