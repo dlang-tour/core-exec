@@ -3,19 +3,9 @@ sudo: required
 services:
   - docker
 
-env:
-  - DLANG_VERSION=dmd-nightly DLANG_EXEC=dmd
-  - DLANG_VERSION=dmd-beta DLANG_EXEC=dmd
-  - DLANG_VERSION=dmd DLANG_EXEC=dmd
-  - DLANG_VERSION=ldc-beta DLANG_EXEC=ldmd2
-  - DLANG_VERSION=ldc DLANG_EXEC=ldmd2
-  - DLANG_VERSION=gdc DLANG_EXEC=gdmd
-
 script:
-  - sed "s/DLANG_VERSION \".*\"/DLANG_VERSION \"${DLANG_VERSION}\"/" -i Dockerfile
-  - sed "s/DLANG_EXEC \".*\"/DLANG_EXEC \"${DLANG_EXEC}\"/" -i Dockerfile
-  - docker build -t dlangtour/core-exec:${DLANG_VERSION} .
+  - docker build -t dlang-tour/dlang-tour-exec:dmd-nightly .
 
 after_success:
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-  - docker push dlangtour/core-exec:${DLANG_VERSION}
+  - docker push dlang-tour/dlang-tour-exec:dmd-nightly
