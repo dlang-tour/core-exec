@@ -16,15 +16,30 @@ to support online compilation of user code in a safe sandbox.
 Run the docker container passing the base64 source as
 command line parameter:
 
-        > bsource=$(echo 'void main() { import std.stdio; writefln("Hello World, %s (%s)",  __VENDOR__, __VERSION__); }' | base64 -w0)
-	> docker run --rm dlangtour/core-exec:dmd-nightly $bsource
+    > bsource=$(echo 'void main() { import std.stdio; writefln("Hello World, %s (%s)",  __VENDOR__, __VERSION__); }' | base64 -w0)
+    > docker run --rm dlangtour/core-exec:dmd-nightly $bsource
 
-	Hello World, Digital Mars D (2074)
-	
-	> bsource=$(echo 'void main() { import std.stdio; writefln("Hello World, %s (%s)",  __VENDOR__, __VERSION__); }' | base64 -w0)
-	> docker run --rm dlangtour/core-exec:ldc $bsource
+    Hello World, Digital Mars D (2074)
 
-	Hello World, LDC (2072)
+    > bsource=$(echo 'void main() { import std.stdio; writefln("Hello World, %s (%s)",  __VENDOR__, __VERSION__); }' | base64 -w0)
+    > docker run --rm dlangtour/core-exec:ldc $bsource
+
+    Hello World, LDC (2072)
+
+### Stdin
+
+    $ bsource=$(echo 'void main() { import std.algorithm, std.stdio; stdin.byLine.each!writeln; }' | base64 -w0)
+    $ bstdin=$(printf 'Venus\nParis\nMontreal' | base64 -w0)
+    $ docker run --rm dlangtour/core-exec:dmd $bsource $bstdin
+    Venus
+    Paris
+    Montreal
+
+### Custom compiler arguments
+
+    $ bsource=$(echo 'void main() { import std.stdio; version(Foo) writeln("Hello World"); }' | base64 -w0)
+    $ DOCKER_FLAGS="-version=Foo" docker run -e DOCKER_FLAGS --rm dlangtour/core-exec:dmd $bsource
+    Hello World
 
 ## Docker image
 
