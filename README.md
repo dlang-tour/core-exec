@@ -8,14 +8,14 @@ tries to compile the source and, if successful, outputs
 the program's output. Compiler errors will also be output,
 to stderr.
 
-This container is used in the [dlang-tour](https://github.com/stonemaster/dlang-tour)
+This container is used in the [dlang-tour](https://github.com/dlang-tour/core)
 to support online compilation of user code in a safe sandbox.
 
 ## Usage
 
 Given a source code:
 
-	$ source='void main() { import std.stdio; writeln("Hello World"); }
+	$ source='void main() { import std.stdio; writeln("Hello World"); }'
 
 Convert it to Base64:
 
@@ -29,7 +29,7 @@ command line parameter:
 
 ## Docker image
 
-The docker image gets built after every push to `master` and pushed to [DockerHub](https://hub.docker.com/r/stonemaster/dlang-tour-rdmd/).
+The docker image gets built after every push to `master` and pushed to [DockerHub](https://hub.docker.com/r/dlang-tour/core-exec/).
 
 ## License
 
