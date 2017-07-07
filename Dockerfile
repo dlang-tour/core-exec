@@ -4,6 +4,7 @@ MAINTAINER "Sebastian Wilzbach <seb@wilzba.ch>"
 
 ENV DLANG_VERSION "dmd-nightly"
 
+# TODO: bash -c "find /dlang \( -type d -and \! -type l -and -path '*/bin32' -or -path '*/lib32' -or -path '*/html' \) -exec rm -rf {} \;" \
 RUN apt-get update && apt-get install --no-install-recommends -y libc-dev gcc curl ca-certificates xz-utils \
  && curl -fsS -o /tmp/install.sh http://dlang.org/install.sh \
  && bash /tmp/install.sh -p /dlang install -s "dmd-nightly" \
@@ -15,7 +16,6 @@ RUN apt-get update && apt-get install --no-install-recommends -y libc-dev gcc cu
  && rm -rf /var/cache/apt \
  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
  && rm -rf /dlang/dub* \
- && bash -c "find /dlang \( -type d -and -path '*/bin32' -or -path '*/lib32' -or -path '*/html' \) -exec rm -rf {} \;" \
  && chmod 555 -R /dlang
 
 ENV \
