@@ -13,23 +13,31 @@ to support online compilation of user code in a safe sandbox.
 
 ## Usage
 
-Given a source code:
-
-	$ source='void main() { import std.stdio; writeln("Hello World"); }'
-
-Convert it to Base64:
-
-	$ bsource=$(echo $source | base64 -w0)
-
 Run the docker container passing the base64 source as
 command line parameter:
 
-	$ docker run --rm stonemaster/dlang-tour-rdmd $bsource
-	Hello World
+        > bsource=$(echo 'void main() { import std.stdio; writefln("Hello World, %s (%s)",  __VENDOR__, __VERSION__); }' | base64 -w0)
+	> docker run --rm dlangtour/core-exec:dmd-nightly $bsource
+
+	Hello World, Digital Mars D (2074)
+	
+	> bsource=$(echo 'void main() { import std.stdio; writefln("Hello World, %s (%s)",  __VENDOR__, __VERSION__); }' | base64 -w0)
+	> docker run --rm dlangtour/core-exec:ldc $bsource
+
+	Hello World, LDC (2072)
 
 ## Docker image
 
 The docker image gets built after every push to `master` and pushed to [DockerHub](https://hub.docker.com/r/dlang-tour/core-exec/).
+They are updated daily.
+The following images are available:
+
+- `dlangtour/core-exec:dmd-nightly`
+- `dlangtour/core-exec:dmd-beta`
+- `dlangtour/core-exec:dmd`
+- `dlangtour/core-exec:ldc-beta`
+- `dlangtour/core-exec:ldc`
+- `dlangtour/core-exec:gdc`
 
 ## License
 
