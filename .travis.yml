@@ -1,7 +1,10 @@
-sudo: required
-
+language: ruby
 services:
   - docker
+
+branches:
+  only:
+  - master
 
 env:
   - DLANG_VERSION=dmd-nightly DLANG_EXEC=dmd
@@ -11,10 +14,15 @@ env:
   - DLANG_VERSION=ldc DLANG_EXEC=ldmd2
   - DLANG_VERSION=gdc DLANG_EXEC=gdmd
 
+matrix:
+    allow_failures:
+        - env: DLANG_VERSION=gdc DLANG_EXEC=gdmd
+
 script:
   - sed "s/DLANG_VERSION \".*\"/DLANG_VERSION \"${DLANG_VERSION}\"/" -i Dockerfile
   - sed "s/DLANG_EXEC \".*\"/DLANG_EXEC \"${DLANG_EXEC}\"/" -i Dockerfile
   - docker build -t dlangtour/core-exec:${DLANG_VERSION} .
+  - ./test.sh dlangtour/core-exec:${DLANG_VERSION}
 
 after_success:
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
