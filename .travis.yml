@@ -1,3 +1,4 @@
+language: ruby
 services:
   - docker
 
@@ -12,6 +13,10 @@ env:
   - DLANG_VERSION=ldc-beta DLANG_EXEC=ldmd2
   - DLANG_VERSION=ldc DLANG_EXEC=ldmd2
   - DLANG_VERSION=gdc DLANG_EXEC=gdmd
+
+matrix:
+    allow_failures:
+        - env: DLANG_VERSION=gdc DLANG_EXEC=gdmd
 
 script:
   - sed "s/DLANG_VERSION \".*\"/DLANG_VERSION \"${DLANG_VERSION}\"/" -i Dockerfile
