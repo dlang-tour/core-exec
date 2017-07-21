@@ -25,5 +25,5 @@ script:
   - ./test.sh dlangtour/core-exec:${DLANG_VERSION}
 
 after_success:
-  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-  - docker push dlangtour/core-exec:${DLANG_VERSION}
+  - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] ; then docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD" ; fi
+  - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then docker push dlangtour/core-exec:${DLANG_VERSION} ; fi
