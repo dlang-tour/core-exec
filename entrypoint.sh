@@ -15,9 +15,9 @@ if  grep -qE "dub[.](sdl|json):" onlineapp.d > /dev/null 2>&1  ; then
     exec timeout -s KILL ${TIMEOUT:-20} dub -q --compiler=${DLANG_EXEC} --single --skip-registry=all onlineapp.d | tail -n100
 elif [ -z ${2:-""} ] ; then
     exec timeout -s KILL ${TIMEOUT:-20} \
-        bash -c 'faketty () { script -qfc "$(printf "%q " "$@")" /dev/null ; };'"faketty ${DLANG_EXEC} $args -color=$coloring -run onlineapp.d | cat" \
+        bash -c 'faketty () { script -qfc "$(printf "%q " "$@")" /dev/null ; };'"faketty ${DLANG_EXEC} $args -color=$coloring -g -run onlineapp.d | cat" \
         | sed 's/\r//' \
         | tail -n100
 else
-    exec timeout -s KILL ${TIMEOUT:-20} bash -c "echo $2 | base64 -d | ${DLANG_EXEC} $args -run onlineapp.d | tail -n100"
+    exec timeout -s KILL ${TIMEOUT:-20} bash -c "echo $2 | base64 -d | ${DLANG_EXEC} $args -g -run onlineapp.d | tail -n100"
 fi
