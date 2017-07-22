@@ -35,6 +35,10 @@ source='/++dub.sdl: name"foo"+/ void main() { import std.stdio; writeln("Hello W
 bsource=$(echo "$source" | base64 -w0)
 [ "$(docker run --rm $dockerId $bsource)" == "Hello World" ]
 
-source="/++dub.sdl: name\"foo\" \n dependency\"mir\" version=\"1.1.1\"+/ void main() { import mir.combinatorics, std.stdio; writeln([0, 1].permutations); }"
+source="/++dub.sdl: name\"foo\" \n dependency\"mir\" version=\"~>1.1.1\"+/ void main() { import mir.combinatorics, std.stdio; writeln([0, 1].permutations); }"
 bsource=$(echo -e "$source" | base64 -w0)
 [ "$(docker run --rm "$dockerId" "$bsource")" == "[[0, 1], [1, 0]]" ]
+
+source="/++dub.sdl: name\"foo\" \n dependency\"vibe-d\" version=\"~>0.8.0\"+/ void main() { import vibe.d, std.stdio; Json a; a.writeln; }"
+bsource=$(echo -e "$source" | base64 -w0)
+[ "$(docker run --rm "$dockerId" "$bsource")" == "null" ]
