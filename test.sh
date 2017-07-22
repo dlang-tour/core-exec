@@ -29,3 +29,12 @@ bsource=$(echo $source | base64 -w0)
 [ "$(DOCKER_FLAGS="-version=Fooo" docker run -e DOCKER_FLAGS --rm $dockerId $bsource)" == "" ]
 [ "$(DOCKER_FLAGS="-version=Foo" docker run -e DOCKER_FLAGS --rm $dockerId $bsource)" != "Hello world" ]
 [ "$(DOCKER_FLAGS="-version=Bar -version=Foo" docker run -e DOCKER_FLAGS --rm $dockerId $bsource)" != "Hello world" ]
+
+## dub file
+source='/++dub.sdl: name"foo"+/ void main() { import std.stdio; writeln("Hello World"); }'
+bsource=$(echo "$source" | base64 -w0)
+[ "$(docker run --rm $dockerId $bsource)" == "Hello World" ]
+
+source="/++dub.sdl: name\"foo\" \n dependency\"mir\" version=\"1.1.1\"+/ void main() { import mir.combinatorics, std.stdio; writeln([0, 1].permutations); }"
+bsource=$(echo -e "$source" | base64 -w0)
+[ "$(docker run --rm "$dockerId" "$bsource")" == "[[0, 1], [1, 0]]" ]

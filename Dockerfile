@@ -14,21 +14,38 @@ RUN curl -fsS -o /tmp/install.sh http://dlang.org/install.sh \
  && ln -s /dlang/$(ls -tr /dlang | tail -n1) /dlang/${DLANG_VERSION} \
  && rm /tmp/install.sh \
  && rm /dlang/install.sh \
- && apt-get auto-remove -y curl ca-certificates xz-utils \
+ && apt-get auto-remove -y xz-utils \
  && rm -rf /var/cache/apt \
  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
  && find /dlang \( -type d -and \! -type l -and -path "*/bin32" -or -path "*/lib32" -or -path "*/html" \) | xargs rm -rf \
  && chmod 555 -R /dlang
 
 ENV \
-  PATH=/dlang/${DLANG_VERSION}/linux/bin64:/dlang/${DLANG_VERSION}/bin:${PATH} \
+  PATH=/dlang/${DLANG_VERSION}/linux/bin64:/dlang/dub:/dlang/${DLANG_VERSION}/bin:${PATH} \
   LD_LIBRARY_PATH=/dlang/${DLANG_VERSION}/linux/lib64:/dlang/${DLANG_VERSION}/lib \
   LIBRARY_PATH=/dlang/${DLANG_VERSION}/linux/lib64:/dlang/${DLANG_VERSION}/lib
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-RUN mkdir /sandbox && chown nobody:nogroup /sandbox
-USER nobody
+RUN useradd -d /sandbox d-user
+
+RUN mkdir /sandbox && chown d-user:nogroup /sandbox
+USER d-user
+
+RUN cd /sandbox && for package in \
+		mir:1.1.1 \
+		mir-algorithm:0.6.7 \
+		vibe.d:0.8.0 \
+		dyaml:0.6.3 \
+		libdparse:0.7.0 \
+		; do \
+		name="$(echo $package | cut -d: -f1)"; \
+		version="$(echo $package | cut -d: -f2)"; \
+		printf "/++dub.sdl: name\"foo\"\ndependency\"${name}\" version=\"${version}\"+/\n void main() {}" > foo.d; \
+		dub build --single -v --compiler=${DLANG_EXEC} foo.d; \
+		rm -f foo*; \
+		rm -rf .dub/build; \
+	done
 
 ENTRYPOINT [ "/entrypoint.sh" ]
