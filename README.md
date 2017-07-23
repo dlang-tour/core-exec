@@ -41,6 +41,13 @@ command line parameter:
     $ DOCKER_FLAGS="-version=Foo" docker run -e DOCKER_FLAGS --rm dlangtour/core-exec:dmd $bsource
     Hello World
 
+### Colored output
+
+    $ bsource=$(echo 'void main() { import foo; version(Foo) writeln("Hello World"); }' | base64 -w0)
+    $ DOCKER_COLOR="on" docker run -e DOCKER_COLOR --rm dlangtour/core-exec:dmd $bsource
+
+![image](https://user-images.githubusercontent.com/4370550/28495813-0f497240-6f5b-11e7-9108-18e5ad6366c5.png)
+
 ## Docker image
 
 The docker image gets built after every push to `master` and pushed to [DockerHub](https://hub.docker.com/r/dlang-tour/core-exec/).
