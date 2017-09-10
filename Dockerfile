@@ -10,6 +10,7 @@ ENV DLANG_VERSION "dmd-nightly"
 ENV DLANG_EXEC "dmd"
 
 RUN curl -fsS -o /tmp/install.sh http://dlang.org/install.sh \
+ && head /tmp/install.sh \
  && bash /tmp/install.sh -p /dlang install -s ${DLANG_VERSION} \
  && rm -f /dlang/d-keyring.gpg \
  && rm -rf /dlang/dub* \
