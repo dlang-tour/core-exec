@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y libc-dev gcc cu
 ENV DLANG_VERSION "dmd-nightly"
 ENV DLANG_EXEC "dmd"
 
-RUN curl -fsS -o /tmp/install.sh http://dlang.org/install.sh \
+RUN curl -fsS -o /tmp/install.sh https://dlang.org/install.sh \
  && head /tmp/install.sh \
  && bash /tmp/install.sh -p /dlang install -s ${DLANG_VERSION} \
  && rm -f /dlang/d-keyring.gpg \
