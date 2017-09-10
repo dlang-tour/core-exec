@@ -2,10 +2,6 @@ language: ruby
 services:
   - docker
 
-branches:
-  only:
-  - master
-
 env:
   - DLANG_VERSION=dmd-nightly DLANG_EXEC=dmd
   - DLANG_VERSION=dmd-beta DLANG_EXEC=dmd
