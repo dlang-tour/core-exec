@@ -11,17 +11,26 @@ args=${DOCKER_FLAGS:-""}
 coloring=${DOCKER_COLOR:-"off"}
 export TERM="dtour"
 return_asm=0
+return_vcg=0
 if [[ $args =~ .*-asm.* ]] ; then
     args="${args/-asm/-c}"
     return_asm=1
 fi
+if [[ $args =~ .*-vcg-ast.* ]] ; then
+    args="${args/-vcg-ast/-vcg-ast -c}"
+    return_vcg=1
+fi
+
 
 if  grep -qE "dub[.](sdl|json):" onlineapp.d > /dev/null 2>&1  ; then
     exec timeout -s KILL ${TIMEOUT:-30} dub -q --compiler=${DLANG_EXEC} --single --skip-registry=all onlineapp.d | tail -n10000
-elif [[ $args =~ .*-c.* ]] ; then
+elif [ $return_asm -eq 1 ] ; then
     exec timeout -s KILL ${TIMEOUT:-30} bash -c "${DLANG_EXEC} $args -g onlineapp.d | tail -n100; \
-    if [ $return_asm -eq 1 ] ; then \
-        obj2asm onlineapp.o | tail -n10000; \
+        obj2asm onlineapp.o | tail -n10000;"
+elif [[ $args =~ .*-c.* ]] ; then
+    exec timeout -s KILL ${TIMEOUT:-30} bash -c "${DLANG_EXEC} -o- $args -g onlineapp.d | tail -n100; \
+    if [ $return_vcg -eq 1 ] ; then \
+        cat onlineapp.d.cg | tail -n10000; \
     fi"
 elif [ -z ${2:-""} ] ; then
     exec timeout -s KILL ${TIMEOUT:-30} \
