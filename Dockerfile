@@ -27,9 +27,6 @@ ENV \
   LD_LIBRARY_PATH=/dlang/${DLANG_VERSION}/linux/lib64:/dlang/${DLANG_VERSION}/lib \
   LIBRARY_PATH=/dlang/${DLANG_VERSION}/linux/lib64:/dlang/${DLANG_VERSION}/lib
 
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-
 RUN useradd -d /sandbox d-user
 
 RUN mkdir /sandbox && chown d-user:nogroup /sandbox
@@ -49,5 +46,10 @@ RUN cd /sandbox && for package in \
 		rm -f foo*; \
 		rm -rf .dub/build; \
 	done
+
+USER root
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+USER d-user
 
 ENTRYPOINT [ "/entrypoint.sh" ]
