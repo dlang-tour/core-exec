@@ -48,7 +48,7 @@ source='void main() { static assert(0); }'
 bsource=$(echo $source | base64 -w0)
 
 # Check -asm (DMD-only)
-if [[ ! $dockerId =~ "ldmd" ]] ; then
+if [[ ! $dockerId =~ "ldc" ]] ; then
     source='void main() { int a; }'
     bsource=$(echo $source | base64 -w0)
     DOCKER_FLAGS="-asm" docker run -e DOCKER_FLAGS --rm $dockerId $bsource | grep -q "_Dmain"
