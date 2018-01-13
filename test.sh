@@ -42,3 +42,14 @@ bsource=$(echo -e "$source" | base64 -w0)
 source="/++dub.sdl: name\"foo\" \n dependency\"vibe-d\" version=\"~>0.8.0\"+/ void main() { import vibe.d, std.stdio; Json a; a.writeln; }"
 bsource=$(echo -e "$source" | base64 -w0)
 [ "$(docker run --rm "$dockerId" "$bsource")" == "null" ]
+
+# Test -c
+source='void main() { static assert(0); }'
+bsource=$(echo $source | base64 -w0)
+
+# Check -asm (DMD-only)
+if [[ ! $dockerId =~ "ldmd" ]] ; then
+    source='void main() { int a; }'
+    bsource=$(echo $source | base64 -w0)
+    DOCKER_FLAGS="-asm" docker run -e DOCKER_FLAGS --rm $dockerId $bsource | grep -q "_Dmain"
+fi
