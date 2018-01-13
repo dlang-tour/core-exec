@@ -47,6 +47,11 @@ bsource=$(echo -e "$source" | base64 -w0)
 source='void main() { static assert(0); }'
 bsource=$(echo $source | base64 -w0)
 
+# Test -vcg-ast
+source='void main() { foreach (i; [1, 2]) {} }'
+bsource=$(echo $source | base64 -w0)
+DOCKER_FLAGS="-vcg-ast" docker run -e DOCKER_FLAGS --rm $dockerId $bsource | grep -q "__key"
+
 # Check -asm (DMD-only)
 if [[ ! $dockerId =~ "ldc" ]] ; then
     source='void main() { int a; }'
