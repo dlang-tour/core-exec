@@ -39,7 +39,7 @@ elif [ $return_asm -eq 1 ] ; then
     exec timeout -s KILL ${TIMEOUT:-30} bash -c "${DLANG_EXEC} $args -g onlineapp.d | tail -n100; \
         obj2asm onlineapp.o | tail -n10000;"
 elif [[ $args =~ .*-c.* ]] ; then
-    exec timeout -s KILL ${TIMEOUT:-30} bash -c "${compiler} $args -g onlineapp.d | tail -n100; \
+    exec timeout -s KILL ${TIMEOUT:-30} bash -c "${compiler} $args onlineapp.d | tail -n100; \
     if [ -f $return_file ] ; then \
         cat "$return_file" | tail -n10000; \
     fi"
