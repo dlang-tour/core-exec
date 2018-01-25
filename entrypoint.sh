@@ -17,6 +17,7 @@ if [[ $args =~ .*-asm.* ]] ; then
     args="${args/-asm/-c}"
     return_asm=1
 elif [[ $args =~ .*-D.* ]] ; then
+    args="${args/-D/-D -c -o-}"
     return_file="onlineapp.html"
 elif [[ $args =~ .*-output-s.* ]] ; then
     args="${args/-output-s/-output-s -c}"
