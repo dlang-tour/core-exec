@@ -42,11 +42,11 @@ if  grep -qE "dub[.](sdl|json):" onlineapp.d > /dev/null 2>&1  ; then
     exec timeout -s KILL ${TIMEOUT:-30} dub -q --compiler=${DLANG_EXEC} --single --skip-registry=all onlineapp.d | tail -n10000
 elif [ $return_asm -eq 1 ] ; then
     exec timeout -s KILL ${TIMEOUT:-30} bash -c "${DLANG_EXEC} $args -g onlineapp.d | tail -n100; \
-        obj2asm onlineapp.o | $ddemangle | tail -n10000;"
+        obj2asm onlineapp.o | $ddemangle | tail -n500000;"
 elif [[ $args =~ .*-c.* ]] ; then
     exec timeout -s KILL ${TIMEOUT:-30} bash -c "${compiler} $args onlineapp.d | tail -n100; \
     if [ -f $return_file ] ; then \
-        cat "$return_file" | $ddemangle | tail -n10000; \
+        cat "$return_file" | $ddemangle | tail -n500000; \
     fi"
 elif [ -z ${2:-""} ] ; then
     exec timeout -s KILL ${TIMEOUT:-30} \
