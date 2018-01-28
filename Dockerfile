@@ -35,7 +35,7 @@ USER d-user
 RUN cd /sandbox && for package in \
 		mir:1.1.1 \
 		mir-algorithm:0.6.7 \
-		vibe-d:0.8.2 \
+		vibe-d:0.8.3-alpha.1 \
 		dyaml:0.6.3 \
 		libdparse:0.7.2-alpha.5 \
 		emsi_containers:0.6.0 \
