@@ -37,7 +37,7 @@ RUN cd /sandbox && for package in \
 		mir-algorithm:0.6.7 \
 		vibe-d:0.8.2 \
 		dyaml:0.6.3 \
-		libdparse:0.7.0 \
+		libdparse:0.7.2-alpha.5 \
 		; do \
 		name="$(echo $package | cut -d: -f1)"; \
 		version="$(echo $package | cut -d: -f2)"; \
