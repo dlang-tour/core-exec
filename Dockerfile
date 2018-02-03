@@ -42,7 +42,7 @@ RUN cd /sandbox && for package in \
 		; do \
 		name="$(echo $package | cut -d: -f1)"; \
 		version="$(echo $package | cut -d: -f2)"; \
-		printf "/++dub.sdl: name\"foo\"\ndependency\"${name}\" version=\"${version}\"+/\n void main() {}" > foo.d; \
+		printf "/++dub.sdl: name\"foo\"\ndependency\"${name}\" version=~>\"${version}\"+/\n void main() {}" > foo.d; \
 		dub build --single -v --compiler=${DLANG_EXEC} foo.d; \
 		rm -f foo*; \
 		rm -rf .dub/build; \
