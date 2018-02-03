@@ -2,7 +2,7 @@ FROM ubuntu:17.10
 
 MAINTAINER "Sebastian Wilzbach <seb@wilzba.ch>"
 
-RUN apt-get update && apt-get install --no-install-recommends -y libc-dev gcc curl ca-certificates libevent-dev libssl-dev xz-utils \
+RUN apt-get update && apt-get install --no-install-recommends -y libc-dev gcc curl ca-certificates libevent-dev libssl-dev xz-utils jq \
 	&& update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.gold" 20 \
 	&& update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.bfd" 10
 
@@ -32,26 +32,31 @@ RUN useradd -d /sandbox d-user
 RUN mkdir /sandbox && chown d-user:nogroup /sandbox
 USER d-user
 
-RUN cd /sandbox && for package in \
-		mir:1.1.1 \
-		mir-algorithm:0.6.7 \
-		mir-random:0.3.2 \
+RUN cd /sandbox && for package_name in \
+		mir \
+		mir-algorithm \
+		mir-random \
 		vibe-d:0.8.3-alpha.1 \
-		dyaml:0.6.3 \
-		libdparse:0.7.2-alpha.5 \
-		emsi_containers:0.6.0 \
+		dyaml \
+		libdparse \
+		emsi_containers \
 		; do \
-		name="$(echo $package | cut -d: -f1)"; \
-		version="$(echo $package | cut -d: -f2)"; \
-		printf "/++dub.sdl: name\"foo\"\ndependency\"${name}\" version=\"${version}\"+/\n void main() {}" > foo.d; \
+      	package="$(echo $package_name | cut -d: -f1)"; \
+      	version="$(echo $package_name | grep : |cut -d: -f2)"; \
+      	version="${version:-*}"; \
+		printf "/++dub.sdl: name\"foo\"\ndependency\"${package}\" version=\"${version}\"+/\n void main() {}" > foo.d; \
 		dub build --single -v --compiler=${DLANG_EXEC} foo.d; \
+		version=$(dub describe ${package} | jq '.packages[0].version') ; \
+		echo "${package}:${version}" >> packages; \
 		rm -f foo*; \
 		rm -rf .dub/build; \
 	done
 
 USER root
 COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+RUN chmod +x /entrypoint.sh; \
+	mv /sandbox/packages /installed_packages; \
+	chmod 555 /installed_packages
 USER d-user
 
 ENTRYPOINT [ "/entrypoint.sh" ]
