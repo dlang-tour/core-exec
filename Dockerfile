@@ -33,9 +33,9 @@ RUN mkdir /sandbox && chown d-user:nogroup /sandbox
 USER d-user
 
 RUN cd /sandbox && for package_name in \
-		mir \
 		mir-algorithm \
 		mir-random \
+		mir \
 		vibe-d:0.8.3-alpha.1 \
 		dyaml \
 		libdparse \
@@ -45,6 +45,7 @@ RUN cd /sandbox && for package_name in \
       	version="$(echo $package_name | grep : |cut -d: -f2)"; \
       	version="${version:-*}"; \
 		printf "/++dub.sdl: name\"foo\"\ndependency\"${package}\" version=\"${version}\"+/\n void main() {}" > foo.d; \
+		dub fetch "${package}" --version="${version}"; \
 		dub build --single -v --compiler=${DLANG_EXEC} foo.d; \
 		version=$(dub describe ${package} | jq '.packages[0].version') ; \
 		echo "${package}:${version}" >> packages; \
