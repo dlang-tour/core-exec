@@ -45,6 +45,7 @@ RUN cd /sandbox && for package_name in \
 		mir-algorithm \
 		mir-random \
 		mir \
+		lubeck \
 		vibe-d:0.8.3-alpha.1 \
 		dyaml \
 		libdparse \
