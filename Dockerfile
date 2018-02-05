@@ -2,7 +2,16 @@ FROM ubuntu:17.10
 
 MAINTAINER "Sebastian Wilzbach <seb@wilzba.ch>"
 
-RUN apt-get update && apt-get install --no-install-recommends -y libc-dev gcc curl ca-certificates libevent-dev libssl-dev xz-utils jq \
+RUN apt-get update && apt-get install --no-install-recommends -y \
+	ca-certificates \
+	curl \
+	gcc \
+	jq \
+	libblas-dev \
+	libc-dev \
+	libevent-dev \
+	liblapack-dev \
+	libssl-dev xz-utils \
 	&& update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.gold" 20 \
 	&& update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.bfd" 10
 
@@ -36,6 +45,7 @@ RUN cd /sandbox && for package_name in \
 		mir-algorithm \
 		mir-random \
 		mir \
+		lubeck \
 		vibe-d:0.8.3-alpha.1 \
 		dyaml \
 		libdparse \
