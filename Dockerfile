@@ -7,10 +7,10 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 	curl \
 	gcc \
 	jq \
-	libblas-dev \
 	libc-dev \
 	libevent-dev \
 	liblapack-dev \
+	libopenblas-dev \
 	libssl-dev xz-utils \
 	&& update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.gold" 20 \
 	&& update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.bfd" 10
