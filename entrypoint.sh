@@ -34,6 +34,8 @@ elif [[ $args =~ .*-output-ll.* ]] ; then
 elif [[ $args =~ .*-vcg-ast.* ]] ; then
     args="${args/-vcg-ast/-vcg-ast -c -o-}"
     return_file="onlineapp.d.cg"
+elif [[ $args =~ .*-Xf=-* ]] ; then
+    args="${args/-Xf=-/-Xf=- -c -o-}"
 elif [[ $args =~ .*-c.* ]] ; then
     args="${args/-c/-c -o-}"
 fi
