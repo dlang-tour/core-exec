@@ -51,6 +51,7 @@ RUN cd /sandbox && for package_name in \
 		libdparse \
 		emsi_containers \
 		collections \
+		automem \
 		; do \
       	package="$(echo $package_name | cut -d: -f1)"; \
       	version="$(echo $package_name | grep : |cut -d: -f2)"; \
