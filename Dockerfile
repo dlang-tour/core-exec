@@ -52,6 +52,7 @@ RUN cd /sandbox && for package_name in \
 		emsi_containers \
 		collections \
 		automem \
+		pegged \
 		; do \
       	package="$(echo $package_name | cut -d: -f1)"; \
       	version="$(echo $package_name | grep : |cut -d: -f2)"; \
