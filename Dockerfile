@@ -46,6 +46,7 @@ RUN cd /sandbox && for package_name in \
 		mir-random \
 		mir \
 		lubeck \
+		numir \
 		vibe-d:0.8.3-alpha.1 \
 		dyaml \
 		libdparse \
