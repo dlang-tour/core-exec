@@ -39,30 +39,35 @@ elif [[ $args =~ .*-vcg-ast.* ]] ; then
 elif [[ $args =~ .*-Xf=-* ]] ; then
     args="${args/-Xf=-/-Xf=- -c -o-}"
 elif [[ $args =~ .*-c.* ]] ; then
-    args="${args/-c/-c -o-}"
-else
-    args="$args -run"
+        args="${args/-c/-c -o-}"
 fi
 
 if grep -q "^--- .*d" "$onlineapp" > /dev/null 2>&1  ; then
     mv "$onlineapp" onlineapp.har
-    onlineapp=$(har "onlineapp.har" | grep "[.d]$" | paste -s -d ' ')
-    exec timeout -s KILL ${TIMEOUT:-30} bash -c "${DLANG_EXEC} -g $args $onlineapp | tail -n100000"
+    onlineapp=$(har --dir=$PWD "onlineapp.har" | grep "[.d]$" | paste -s -d ' ')
+    exec timeout -s KILL ${TIMEOUT:-30} bash -c "rdmd --compiler=${DLANG_EXEC} -g $args $onlineapp | tail -n100000"
 elif  grep -qE "dub[.](sdl|json):" "$onlineapp" > /dev/null 2>&1  ; then
     exec timeout -s KILL ${TIMEOUT:-30} dub -q --compiler=${DLANG_EXEC} --single --skip-registry=all "$onlineapp" | tail -n10000
-elif [ $return_asm -eq 1 ] ; then
-    exec timeout -s KILL ${TIMEOUT:-30} bash -c "${DLANG_EXEC} $args -g "$onlineapp" | tail -n100; \
-        obj2asm onlineapp.o | $ddemangle | tail -n500000;"
-elif [[ $args =~ .*-c.* ]] ; then
-    exec timeout -s KILL ${TIMEOUT:-30} bash -c "${compiler} $args "$onlineapp" | tail -n100; \
-    if [ -f $return_file ] ; then \
-        cat "$return_file" | $ddemangle | tail -n500000; \
-    fi"
-elif [ -z ${2:-""} ] ; then
-    exec timeout -s KILL ${TIMEOUT:-30} \
-        bash -c 'faketty () { script -qfc "$(printf "%q " "$@")" /dev/null ; };'"faketty ${DLANG_EXEC} -color=$coloring -g $args "$onlineapp" | cat" \
-        | sed 's/\r//' \
-        | tail -n10000
 else
-    exec timeout -s KILL ${TIMEOUT:-30} bash -c "echo $2 | base64 -d | ${DLANG_EXEC} -g $args "$onlineapp" | tail -n10000"
+    if ! [[ $args =~ .*-c.* ]] ; then
+        args="$args -run"
+    fi
+
+    if [ $return_asm -eq 1 ] ; then
+        exec timeout -s KILL ${TIMEOUT:-30} bash -c "${DLANG_EXEC} $args -g "$onlineapp" | tail -n100; \
+            obj2asm onlineapp.o | $ddemangle | tail -n500000;"
+    elif [[ $args =~ .*-c.* ]] ; then
+        exec timeout -s KILL ${TIMEOUT:-30} bash -c "${compiler} $args "$onlineapp" | tail -n100; \
+        if [ -f $return_file ] ; then \
+            cat "$return_file" | $ddemangle | tail -n500000; \
+        fi"
+    elif [ -z ${2:-""} ] ; then
+        exec timeout -s KILL ${TIMEOUT:-30} \
+            bash -c 'faketty () { script -qfc "$(printf "%q " "$@")" /dev/null ; };'"faketty ${DLANG_EXEC} -color=$coloring -g $args "$onlineapp" | cat" \
+            | sed 's/\r//' \
+            | tail -n10000
+    else
+        exec timeout -s KILL ${TIMEOUT:-30} bash -c "echo $2 | base64 -d | ${DLANG_EXEC} -g $args "$onlineapp" | tail -n10000"
+
+    fi
 fi
