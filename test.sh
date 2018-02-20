@@ -80,4 +80,9 @@ DOCKER_FLAGS="-Xf=-" docker run -e DOCKER_FLAGS --rm $dockerId $bsource | grep -
 # Check Har
 source="--- test.d\nvoid main(){import std.stdio; __FILE__.writeln;}"
 bsource=$(echo -e "$source" | base64 -w0)
-docker run -e DOCKER_FLAGS --rm $dockerId $bsource | grep -q "test.d"
+docker run --rm $dockerId $bsource | grep -q "test.d"
+
+# Check har with multiple files
+source="--- test.d\nvoid main(){import bar; foo();}\n--- bar.d\nvoid foo(){import std.stdio; __FILE__.writeln;}"
+bsource=$(echo -e "$source" | base64 -w0)
+docker run --rm $dockerId $bsource | grep -q "bar.d"
