@@ -73,7 +73,11 @@ bsource=$(echo $source | base64 -w0)
 DOCKER_FLAGS="-D" docker run -e DOCKER_FLAGS --rm $dockerId $bsource | grep -q "<html>"
 
 # Check JSON output
-
 source='///\nvoid main(){}'
 bsource=$(echo $source | base64 -w0)
 DOCKER_FLAGS="-Xf=-" docker run -e DOCKER_FLAGS --rm $dockerId $bsource | grep -q '"file" : "onlineapp.d"'
+
+# Check Har
+source="--- test.d\nvoid main(){import std.stdio; __FILE__.writeln;}"
+bsource=$(echo -e "$source" | base64 -w0)
+docker run -e DOCKER_FLAGS --rm $dockerId $bsource | grep -q "test.d"

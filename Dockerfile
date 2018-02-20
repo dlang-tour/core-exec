@@ -32,9 +32,12 @@ RUN curl -fsS -o /tmp/install.sh https://dlang.org/install.sh \
  && chmod 555 -R /dlang
 
 ENV \
-  PATH=/dlang/${DLANG_VERSION}/linux/bin64:/dlang/dub:/dlang/${DLANG_VERSION}/bin:${PATH} \
+  PATH=/dlang/${DLANG_VERSION}/linux/bin64:/dlang/dub:/dlang/${DLANG_VERSION}/bin:/dlang/har:${PATH} \
   LD_LIBRARY_PATH=/dlang/${DLANG_VERSION}/linux/lib64:/dlang/${DLANG_VERSION}/lib \
   LIBRARY_PATH=/dlang/${DLANG_VERSION}/linux/lib64:/dlang/${DLANG_VERSION}/lib
+
+RUN mkdir -p /dlang/har
+COPY har/har /dlang/har/har
 
 RUN useradd -d /sandbox d-user
 
