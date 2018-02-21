@@ -38,14 +38,18 @@ elif [[ $args =~ .*-vcg-ast.* ]] ; then
     return_file="onlineapp.d.cg"
 elif [[ $args =~ .*-Xf=-* ]] ; then
     args="${args/-Xf=-/-Xf=- -c -o-}"
-elif [[ $args =~ .*-c.* ]] ; then
-        args="${args/-c/-c -o-}"
 fi
 
 if grep -q "^--- .*d" "$onlineapp" > /dev/null 2>&1  ; then
     mv "$onlineapp" onlineapp.har
-    onlineapp=$(har --dir=$PWD "onlineapp.har" | grep "[.d]$" | paste -s -d ' ')
-    exec timeout -s KILL ${TIMEOUT:-30} bash -c "rdmd --compiler=${DLANG_EXEC} -g $args $onlineapp | tail -n100000"
+    output=$(har --dir=$PWD "onlineapp.har" | grep "[.d]$")
+    other_modules=$(echo "$output" | tail -n +2 | paste -s -d ' ')
+    if ! [[ $args =~ .*-c.* ]] ; then
+        with_run="-run"
+    else
+        with_run="-fPIC"
+    fi
+    exec timeout -s KILL ${TIMEOUT:-30} bash -c "${DLANG_EXEC} -g $args $other_modules $with_run $(echo "$output" | head -n1) | tail -n100000"
 elif  grep -qE "dub[.](sdl|json):" "$onlineapp" > /dev/null 2>&1  ; then
     exec timeout -s KILL ${TIMEOUT:-30} dub -q --compiler=${DLANG_EXEC} --single --skip-registry=all "$onlineapp" | tail -n10000
 else
