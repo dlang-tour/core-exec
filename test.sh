@@ -86,3 +86,11 @@ docker run --rm $dockerId $bsource | grep -q "test.d"
 source="--- test.d\nvoid main(){import bar; foo();}\n--- bar.d\nvoid foo(){import std.stdio; __FILE__.writeln;}"
 bsource=$(echo -e "$source" | base64 -w0)
 docker run --rm $dockerId $bsource | grep -q "bar.d"
+
+# Har - minimal runtime
+# Only works on dmd-nightly for now
+if [[ $1 = *nightly ]] ; then
+source="--- object.d\nmodule object;\n--- bar.d\nextern(C) void main(){printf(\"%s\", __MODULE__.ptr);\n}"
+bsource=$(echo -e "$source" | base64 -w0)
+DOCKER_FLAGS="-conf= -defaultlib=" docker run -e DOCKER_FLAGS --rm $dockerId $bsource 2>&1 | grep -q '`printf` is not defined'
+fi
