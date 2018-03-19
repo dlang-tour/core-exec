@@ -50,7 +50,8 @@ RUN cd /sandbox && for package_name in \
 		mir \
 		lubeck \
 		numir \
-		vibe-d:0.8.3-alpha.1 \
+		vibe-d \
+		vibe-core \
 		dyaml \
 		libdparse \
 		emsi_containers \
