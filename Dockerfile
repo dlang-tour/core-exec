@@ -59,7 +59,6 @@ RUN cd /sandbox && for package_name in \
 		collections \
 		automem \
 		pegged \
-		dpp \
 		; do \
       	package="$(echo $package_name | cut -d: -f1)"; \
       	version="$(echo $package_name | grep : |cut -d: -f2)"; \
@@ -67,12 +66,11 @@ RUN cd /sandbox && for package_name in \
 		printf "/++dub.sdl: name\"foo\"\ndependency\"${package}\" version=\"${version}\"+/\n void main() {}" > foo.d; \
 		dub fetch "${package}" --version="${version}"; \
 		dub build --single -v --compiler=${DLANG_EXEC} foo.d; \
-		if [ "${package}" != "dpp" ] ; then \
-			version=$(dub describe ${package} | jq '.packages[0].version') ; \
-			echo "${package}:${version}" >> packages; \
-		fi ; \
+		version=$(dub describe ${package} | jq '.packages[0].version') ; \
+		echo "${package}:${version}" >> packages; \
 		rm -f foo*; \
 		rm -rf .dub/build; \
+		dub fetch dpp && dub build -v --compiler=${DLANG_EXEC} dpp; \
 	done
 
 USER root
