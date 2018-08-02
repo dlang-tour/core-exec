@@ -62,7 +62,7 @@ elif  grep -qE "dub[.](sdl|json):" "$onlineapp" > /dev/null 2>&1  ; then
     exec timeout -s KILL ${TIMEOUT:-30} dub -q --compiler=${DLANG_EXEC} --single --skip-registry=all "$onlineapp" | tail -n10000
 elif [ ${onlineapp: -4} == ".dpp" ]; then
     exec timeout -s KILL ${TIMEOUT:-30} dub run dpp -q --compiler=${DLANG_EXEC} --skip-registry=all -- "$onlineapp" | tail -n10000
-    ./onlineapp
+    exec timeout -s KILL ${TIMEOUT:-30} ./onlineapp
 else
     if ! [[ $args =~ .*-c.* ]] ; then
         args="$args -run"
