@@ -67,8 +67,10 @@ RUN cd /sandbox && for package_name in \
 		printf "/++dub.sdl: name\"foo\"\ndependency\"${package}\" version=\"${version}\"+/\n void main() {}" > foo.d; \
 		dub fetch "${package}" --version="${version}"; \
 		dub build --single -v --compiler=${DLANG_EXEC} foo.d; \
-		version=$(dub describe ${package} | jq '.packages[0].version') ; \
-		echo "${package}:${version}" >> packages; \
+		if [ "${package}" != "dpp" ] ; then \
+			version=$(dub describe ${package} | jq '.packages[0].version') ; \
+			echo "${package}:${version}" >> packages; \
+		fi ; \
 		rm -f foo*; \
 		rm -rf .dub/build; \
 	done
