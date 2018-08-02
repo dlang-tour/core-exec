@@ -5,7 +5,16 @@ set -u
 set -o pipefail
 
 cd /sandbox
-echo "$1" | base64 -d > onlineapp.d
+
+source=$(echo "$1" | base64 -d)
+if grep -qE "#include" <<< "$source" > /dev/null 2>&1; then
+    onlineapp="onlineapp.dpp"
+else
+    onlineapp="onlineapp.d"
+fi
+
+echo "$source" > $onlineapp
+
 
 args=${DOCKER_FLAGS:-""}
 coloring=${DOCKER_COLOR:-"off"}
@@ -14,7 +23,6 @@ compiler="${DLANG_EXEC}"
 return_asm=0
 return_file=
 ddemangle="cat"
-onlineapp="onlineapp.d"
 
 if [[ $args =~ .*-asm.* ]] ; then
     args="${args/-asm/-c}"
@@ -52,6 +60,9 @@ if grep -q "^--- .*d" "$onlineapp" > /dev/null 2>&1  ; then
     exec timeout -s KILL ${TIMEOUT:-30} bash -c "${DLANG_EXEC} -g $args $other_modules $with_run $(echo "$output" | head -n1) | tail -n100000"
 elif  grep -qE "dub[.](sdl|json):" "$onlineapp" > /dev/null 2>&1  ; then
     exec timeout -s KILL ${TIMEOUT:-30} dub -q --compiler=${DLANG_EXEC} --single --skip-registry=all "$onlineapp" | tail -n10000
+elif [ ${onlineapp: -4} == ".dpp" ]; then
+    exec timeout -s KILL ${TIMEOUT:-30} dub run dpp -q --compiler=${DLANG_EXEC} --skip-registry=all -- "$onlineapp" | tail -n10000
+    ./onlineapp
 else
     if ! [[ $args =~ .*-c.* ]] ; then
         args="$args -run"
