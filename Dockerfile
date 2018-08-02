@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 	liblapack-dev \
 	libopenblas-dev \
 	libssl-dev xz-utils \
+	libclang-3.9-dev clang \
 	&& update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.gold" 20 \
 	&& update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.bfd" 10
 
@@ -69,6 +70,7 @@ RUN cd /sandbox && for package_name in \
 		echo "${package}:${version}" >> packages; \
 		rm -f foo*; \
 		rm -rf .dub/build; \
+		dub fetch dpp && dub build -v --compiler=${DLANG_EXEC} dpp; \
 	done
 
 USER root

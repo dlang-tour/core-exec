@@ -94,3 +94,15 @@ source="--- object.d\nmodule object;\n--- bar.d\nextern(C) void main(){printf(\"
 bsource=$(echo -e "$source" | base64 -w0)
 DOCKER_FLAGS="-conf= -defaultlib=" docker run -e DOCKER_FLAGS --rm $dockerId $bsource 2>&1 | grep -q '`printf` is not defined'
 fi
+
+# Check dpp Hello World
+source=$(cat <<EOF
+#include <stdio.h>
+
+void main() {
+    printf("Hello World");
+}
+EOF
+)
+bsource=$(echo "$source" | base64 -w0)
+[ "$(docker run --rm $dockerId $bsource)" == "Hello World" ]
