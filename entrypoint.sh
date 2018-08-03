@@ -50,19 +50,36 @@ fi
 
 if grep -q "^--- .*d" "$onlineapp" > /dev/null 2>&1  ; then
     mv "$onlineapp" onlineapp.har
-    output=$(har --dir=$PWD "onlineapp.har" | grep "[.d]$")
-    other_modules=$(echo "$output" | tail -n +2 | paste -s -d ' ')
+    har_files="$(har --dir=$PWD "onlineapp.har")"
     if ! [[ $args =~ .*-c.* ]] ; then
         with_run="-run"
     else
         with_run="-fPIC"
     fi
-    exec timeout -s KILL ${TIMEOUT:-30} bash -c "${DLANG_EXEC} -g $args $other_modules $with_run $(echo "$output" | head -n1) | tail -n100000"
+    # use dpp for .dpp files
+    if echo "$har_files" | grep -q "[.]dpp$" ; then
+        c_files=($(echo "$har_files" | grep "[.]c$" || echo ""))
+        d_files=($(echo "$har_files" | grep -E "[.](dpp|d)$" || echo ""))
+        other_modules=(${d_files[@]:1})
+        for c_file in "${c_files[@]}" ; do
+            c_out=$(echo "$c_file" | sed "s/[.]c$/.o/")
+            exec timeout -s KILL ${TIMEOUT:-30} gcc -c "$c_file" -o "$c_out"  | tail -n10000
+            other_modules+=("$c_out")
+        done
+        # TODO: cpp support
+        exec timeout -s KILL ${TIMEOUT:-30} dub run dpp -q --compiler=${DLANG_EXEC} --skip-registry=all -- --compiler=${DLANG_EXEC} -g $args "${other_modules[@]}" "${d_files[0]}" | tail -n100000
+        if [ "$with_run" == "-run" ] ; then
+            exec timeout -s KILL ${TIMEOUT:-30} "${d_files[0]%%.*}" | tail -n10000
+        fi
+    else
+        d_files=($(echo "$har_files" | grep "[.]d$" || echo ""))
+        exec timeout -s KILL ${TIMEOUT:-30} bash -c "${DLANG_EXEC} -g $args "${d_files[@]:1}" $with_run "${d_files[0]}" | tail -n100000"
+    fi
 elif  grep -qE "dub[.](sdl|json):" "$onlineapp" > /dev/null 2>&1  ; then
     exec timeout -s KILL ${TIMEOUT:-30} dub -q --compiler=${DLANG_EXEC} --single --skip-registry=all "$onlineapp" | tail -n10000
 elif [ ${onlineapp: -4} == ".dpp" ]; then
     exec timeout -s KILL ${TIMEOUT:-30} dub run dpp -q --compiler=${DLANG_EXEC} --skip-registry=all -- --compiler=${DLANG_EXEC} "$onlineapp" | tail -n10000
-    exec timeout -s KILL ${TIMEOUT:-30} ./onlineapp
+    exec timeout -s KILL ${TIMEOUT:-30} ./onlineapp | tail -n10000
 else
     if ! [[ $args =~ .*-c.* ]] ; then
         args="$args -run"

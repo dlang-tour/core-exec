@@ -106,3 +106,29 @@ EOF
 )
 bsource=$(echo "$source" | base64 -w0)
 [ "$(docker run --rm $dockerId $bsource)" == "Hello World" ]
+
+# Check dpp Hello World with HAR
+source=$(cat <<EOF
+--- c.h
+#ifndef C_H
+#define C_H
+
+#define FOO_ID(x) (x*3)
+
+int twice(int i);
+
+#endif
+
+--- c.c
+int twice(int i) { return i * 2; }
+
+--- foo.dpp
+#include "c.h"
+void main() {
+    import std.stdio;
+    writeln(twice(FOO_ID(5)));  // yes, it's using a C macro here!
+}
+EOF
+)
+bsource=$(echo "$source" | base64 -w0)
+[ "$(docker run --rm $dockerId $bsource)" == "30" ]
