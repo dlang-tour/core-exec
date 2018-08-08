@@ -59,6 +59,7 @@ RUN cd /sandbox && for package_name in \
 		collections \
 		automem \
 		pegged \
+		sumtype \
 		; do \
       	package="$(echo $package_name | cut -d: -f1)"; \
       	version="$(echo $package_name | grep : |cut -d: -f2)"; \
