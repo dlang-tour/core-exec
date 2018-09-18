@@ -16,6 +16,7 @@ env:
 
 matrix:
     allow_failures:
+        - env: DLANG_VERSION=dmd-nightly DLANG_EXEC=dmd
         - env: DLANG_VERSION=gdc DLANG_EXEC=gdmd
 
 script:
