@@ -63,8 +63,8 @@ fi
 if [[ $dockerId =~ "ldc" ]] ; then
     source='void main() { int a; }'
     bsource=$(echo $source | base64 -w0)
-    DOCKER_FLAGS="-output-ll" docker run -e DOCKER_FLAGS --rm $dockerId $bsource | grep -q "call void @ldc.register_dso"
-    DOCKER_FLAGS="-output-s" docker run -e DOCKER_FLAGS --rm $dockerId $bsource | grep -q "callq\s*ldc.register_dso"
+    DOCKER_FLAGS="-output-ll" docker run -e DOCKER_FLAGS --rm $dockerId $bsource | grep -q "@ldc.register_dso"
+    DOCKER_FLAGS="-output-s" docker run -e DOCKER_FLAGS --rm $dockerId $bsource | grep -q "ldc.register_dso:"
 fi
 
 # Check HTML output
