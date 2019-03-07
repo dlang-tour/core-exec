@@ -51,7 +51,7 @@ fi
 if grep -q "^--- .*d" "$onlineapp" > /dev/null 2>&1  ; then
     mv "$onlineapp" onlineapp.har
     har_files="$(har --dir=$PWD "onlineapp.har")"
-    if ! [[ $args =~ .*-c.* ]] ; then
+    if ! [[ "$args" =~ "-c$|-c .*" ]] ; then
         with_run="-run"
     else
         with_run="-fPIC"
