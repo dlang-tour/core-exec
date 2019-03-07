@@ -81,14 +81,14 @@ elif [ ${onlineapp: -4} == ".dpp" ]; then
     exec timeout -s KILL ${TIMEOUT:-30} dub run dpp -q --compiler=${DLANG_EXEC} --skip-registry=all -- --compiler=${DLANG_EXEC} "$onlineapp" | tail -n10000
     exec timeout -s KILL ${TIMEOUT:-30} ./onlineapp | tail -n10000
 else
-    if ! [[ $args =~ .*-c.* ]] ; then
+    if ! [[ "$args" =~ -c$|-c[[:space:]].* ]] ; then
         args="$args -run"
     fi
 
     if [ $return_asm -eq 1 ] ; then
         exec timeout -s KILL ${TIMEOUT:-30} bash -c "${DLANG_EXEC} $args -g "$onlineapp" | tail -n100; \
             obj2asm onlineapp.o | $ddemangle | tail -n500000;"
-    elif [[ $args =~ .*-c.* ]] ; then
+    elif [[ "$args" =~ -c$|-c[[:space:]].* ]] ; then
         exec timeout -s KILL ${TIMEOUT:-30} bash -c "${compiler} $args "$onlineapp" | tail -n100; \
         if [ -f $return_file ] ; then \
             cat "$return_file" | $ddemangle | tail -n500000; \
