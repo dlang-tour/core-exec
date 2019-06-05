@@ -3,7 +3,7 @@ FROM ubuntu:18.04
 MAINTAINER "DLang Tour Community <tour@dlang.io>"
 
 RUN apt-get update && apt-get install --no-install-recommends -y \
-	ca-certificates \
+	ca-certificates gpg \
 	curl \
 	gcc \
 	jq \
