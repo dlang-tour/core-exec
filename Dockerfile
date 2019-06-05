@@ -77,8 +77,7 @@ RUN cd /sandbox && for package_name in \
 
 USER root
 COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh; \
-	mv /sandbox/packages /installed_packages; \
+RUN mv /sandbox/packages /installed_packages; \
 	chmod 555 /installed_packages
 USER d-user
 
