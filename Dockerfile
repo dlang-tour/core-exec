@@ -19,9 +19,12 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 ENV DLANG_VERSION "dmd-nightly"
 ENV DLANG_EXEC "dmd"
 
-RUN curl -fsS -o /tmp/install.sh https://dlang.org/install.sh \
- && bash /tmp/install.sh -p /dlang install ${DLANG_VERSION} \
- && rm -f /dlang/d-keyring.gpg \
+# Download and run the install script
+RUN curl -fsS -o /tmp/install.sh https://dlang.org/install.sh
+RUN bash /tmp/install.sh -p /dlang install ${DLANG_VERSION}
+
+# Clean up to keep the image size minimal
+RUN rm -f /dlang/d-keyring.gpg \
  && rm -rf /dlang/dub* \
  && ln -s /dlang/$(ls -tr /dlang | tail -n1) /dlang/${DLANG_VERSION} \
  && rm /tmp/install.sh \
