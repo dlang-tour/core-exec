@@ -1,9 +1,9 @@
-FROM ubuntu:17.10
+FROM ubuntu:18.04
 
 MAINTAINER "DLang Tour Community <tour@dlang.io>"
 
 RUN apt-get update && apt-get install --no-install-recommends -y \
-	ca-certificates \
+	ca-certificates gpg \
 	curl \
 	gcc \
 	jq \
@@ -12,16 +12,19 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 	liblapack-dev \
 	libopenblas-dev \
 	libssl-dev xz-utils \
-	libclang-3.9-dev clang \
+	libclang-3.9-dev clang libxml2 zlib1g-dev \
 	&& update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.gold" 20 \
 	&& update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.bfd" 10
 
 ENV DLANG_VERSION "dmd-nightly"
 ENV DLANG_EXEC "dmd"
 
-RUN curl -fsS -o /tmp/install.sh https://dlang.org/install.sh \
- && bash /tmp/install.sh -p /dlang install ${DLANG_VERSION} \
- && rm -f /dlang/d-keyring.gpg \
+# Download and run the install script
+RUN curl -fsS -o /tmp/install.sh https://dlang.org/install.sh
+RUN bash /tmp/install.sh -p /dlang install ${DLANG_VERSION}
+
+# Clean up to keep the image size minimal
+RUN rm -f /dlang/d-keyring.gpg \
  && rm -rf /dlang/dub* \
  && ln -s /dlang/$(ls -tr /dlang | tail -n1) /dlang/${DLANG_VERSION} \
  && rm /tmp/install.sh \
@@ -77,8 +80,7 @@ RUN cd /sandbox && for package_name in \
 
 USER root
 COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh; \
-	mv /sandbox/packages /installed_packages; \
+RUN mv /sandbox/packages /installed_packages; \
 	chmod 555 /installed_packages
 USER d-user
 
