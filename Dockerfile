@@ -51,7 +51,12 @@ USER d-user
 RUN cd /sandbox && for package_name in \
 		mir-algorithm \
 		mir-random \
+		mir-core \
+		mir-runtime \
+		mir-optim \
 		mir \
+		asdf \
+		stdx-allocator \
 		lubeck \
 		numir \
 		vibe-d \
@@ -64,6 +69,8 @@ RUN cd /sandbox && for package_name in \
 		pegged \
 		sumtype \
 		optional \
+		mir-lapack \
+		mir-blas \
 		; do \
       	package="$(echo $package_name | cut -d: -f1)"; \
       	version="$(echo $package_name | grep : |cut -d: -f2)"; \
