@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 	liblapack-dev \
 	libopenblas-dev \
 	libssl-dev xz-utils \
-	libclang-3.9-dev clang libxml2 zlib1g-dev \
+	libclang-6.0-dev clang libxml2 zlib1g-dev \
 	&& update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.gold" 20 \
 	&& update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.bfd" 10
 
