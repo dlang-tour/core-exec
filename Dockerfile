@@ -83,12 +83,12 @@ RUN cd /sandbox && for package_name in \
       	version="${version:-*}"; \
 		printf "/++dub.sdl: name\"foo\"\ndependency\"${package}\" version=\"${version}\"+/\n void main() {}" > foo.d; \
 		dub fetch "${package}" --version="${version}"; \
-		dub build --single -v --compiler=${DLANG_EXEC} foo.d; \
+		dub build --single --compiler=${DLANG_EXEC} foo.d; \
 		version=$(dub describe ${package} | jq '.packages[0].version') ; \
 		echo "${package}:${version}" >> packages; \
 		rm -f foo*; \
 		rm -rf .dub/build; \
-		dub fetch dpp && dub build -v --compiler=${DLANG_EXEC} dpp; \
+		dub fetch dpp && dub build --compiler=${DLANG_EXEC} dpp; \
 	done
 
 USER root
