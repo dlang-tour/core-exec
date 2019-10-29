@@ -15,16 +15,19 @@ env:
   - DLANG_VERSION=gdc DLANG_EXEC=gdmd
 
 matrix:
-    allow_failures:
-        - env: DLANG_VERSION=dmd-nightly DLANG_EXEC=dmd
-        - env: DLANG_VERSION=gdc DLANG_EXEC=gdmd
+  allow_failures:
+    - env: DLANG_VERSION=dmd-nightly DLANG_EXEC=dmd
+    - env: DLANG_VERSION=gdc DLANG_EXEC=gdmd
 
 script:
   - sed "s/DLANG_VERSION \".*\"/DLANG_VERSION \"${DLANG_VERSION}\"/" -i Dockerfile
   - sed "s/DLANG_EXEC \".*\"/DLANG_EXEC \"${DLANG_EXEC}\"/" -i Dockerfile
   - docker build -t dlangtour/core-exec:${DLANG_VERSION} .
-  - ./test.sh dlangtour/core-exec:${DLANG_VERSION}
+  - ./test.sh "dlangtour/core-exec:$DLANG_VERSION"
 
 after_success:
-  - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] ; then docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD" ; fi
-  - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then docker push dlangtour/core-exec:${DLANG_VERSION} ; fi
+  - |
+    if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+      docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+      docker push "dlangtour/core-exec:$DLANG_VERSION"
+    fi
