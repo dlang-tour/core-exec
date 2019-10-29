@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 	&& update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.gold" 20 \
 	&& update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.bfd" 10
 
-ENV DLANG_VERSION "dmd-nightly"
+ENV DLANG_VERSION "dmd"
 ENV DLANG_EXEC "dmd"
 
 # Download and run the install script
