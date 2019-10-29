@@ -23,10 +23,17 @@ ENV DLANG_EXEC "dmd"
 RUN curl -fsS -o /tmp/install.sh https://dlang.org/install.sh
 RUN bash /tmp/install.sh -p /dlang install ${DLANG_VERSION}
 
+COPY ./har /tmp/har/src
+SHELL ["/bin/bash", "-c"]
+RUN source /dlang/$(ls -tr /dlang | tail -n1)/activate; \
+  echo $PATH && \
+  $DMD -of=/tmp/har/src/har -g -debug /tmp/har/src/harmain.d /tmp/har/src/archive/har.d
+
 # Clean up to keep the image size minimal
 RUN rm -f /dlang/d-keyring.gpg \
  && rm -rf /dlang/dub* \
  && ln -s /dlang/$(ls -tr /dlang | tail -n1) /dlang/${DLANG_VERSION} \
+ && mkdir -p /dlang/har && cp /tmp/har/src/har /dlang/har/har && rm -rf /tmp/har \
  && rm /tmp/install.sh \
  && rm /dlang/install.sh \
  && apt-get auto-remove -y xz-utils \
@@ -39,9 +46,6 @@ ENV \
   PATH=/dlang/${DLANG_VERSION}/linux/bin64:/dlang/dub:/dlang/${DLANG_VERSION}/bin:/dlang/har:${PATH} \
   LD_LIBRARY_PATH=/dlang/${DLANG_VERSION}/linux/lib64:/dlang/${DLANG_VERSION}/lib \
   LIBRARY_PATH=/dlang/${DLANG_VERSION}/linux/lib64:/dlang/${DLANG_VERSION}/lib
-
-RUN mkdir -p /dlang/har
-COPY har/har /dlang/har/har
 
 RUN useradd -d /sandbox d-user
 

@@ -22,7 +22,6 @@ matrix:
 script:
   - sed "s/DLANG_VERSION \".*\"/DLANG_VERSION \"${DLANG_VERSION}\"/" -i Dockerfile
   - sed "s/DLANG_EXEC \".*\"/DLANG_EXEC \"${DLANG_EXEC}\"/" -i Dockerfile
-  - make -C har har
   - docker build -t dlangtour/core-exec:${DLANG_VERSION} .
   - ./test.sh dlangtour/core-exec:${DLANG_VERSION}
 
