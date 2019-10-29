@@ -20,9 +20,7 @@ matrix:
     - env: DLANG_VERSION=gdc DLANG_EXEC=gdmd
 
 script:
-  - sed "s/DLANG_VERSION \".*\"/DLANG_VERSION \"${DLANG_VERSION}\"/" -i Dockerfile
-  - sed "s/DLANG_EXEC \".*\"/DLANG_EXEC \"${DLANG_EXEC}\"/" -i Dockerfile
-  - docker build -t dlangtour/core-exec:${DLANG_VERSION} .
+  - docker build -t "dlangtour/core-exec:$DLANG_VERSION" --build-arg DLANG_VERSION --build-arg DLANG_EXEC .
   - ./test.sh "dlangtour/core-exec:$DLANG_VERSION"
 
 after_success:

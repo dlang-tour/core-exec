@@ -16,8 +16,10 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 	&& update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.gold" 20 \
 	&& update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.bfd" 10
 
-ENV DLANG_VERSION "dmd"
-ENV DLANG_EXEC "dmd"
+ARG DLANG_VERSION=dmd
+ARG DLANG_EXEC=dmd
+ENV DLANG_VERSION=$DLANG_VERSION
+ENV DLANG_EXEC=$DLANG_EXEC
 
 # Download and run the install script
 RUN curl -fsS -o /tmp/install.sh https://dlang.org/install.sh
