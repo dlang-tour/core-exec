@@ -12,12 +12,10 @@ env:
   - DLANG_VERSION=dmd DLANG_EXEC=dmd
   - DLANG_VERSION=ldc-beta DLANG_EXEC=ldmd2
   - DLANG_VERSION=ldc DLANG_EXEC=ldmd2
-  - DLANG_VERSION=gdc DLANG_EXEC=gdmd
 
 matrix:
   allow_failures:
     - env: DLANG_VERSION=dmd-nightly DLANG_EXEC=dmd
-    - env: DLANG_VERSION=gdc DLANG_EXEC=gdmd
 
 script:
   - docker build -t "dlangtour/core-exec:$DLANG_VERSION" --build-arg DLANG_VERSION --build-arg DLANG_EXEC .
