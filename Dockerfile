@@ -16,6 +16,9 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 	&& update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.gold" 20 \
 	&& update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.bfd" 10
 
+# set libclang6 as default
+RUN ln -s /usr/lib/x86_64-linux-gnu/libclang-6.0.so /usr/lib/x86_64-linux-gnu/libclang.so
+
 ARG DLANG_VERSION=dmd
 ARG DLANG_EXEC=dmd
 ENV DLANG_VERSION=$DLANG_VERSION
