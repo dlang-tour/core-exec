@@ -28,6 +28,11 @@ bsource=$(echo $source | base64 -w0)
 [ "$(DOCKER_FLAGS="-version=Foo" docker run -e DOCKER_FLAGS --rm $dockerId $bsource)" != "Hello world" ]
 [ "$(DOCKER_FLAGS="-version=Bar -version=Foo" docker run -e DOCKER_FLAGS --rm $dockerId $bsource)" != "Hello world" ]
 
+# test runtime args
+source='void main(string[] args) { import std.stdio; writeln(args[1..$]); }'
+bsource=$(echo $source | base64 -w0)
+[ "$(DOCKER_RUNTIME_ARGS="foo -test=bar" docker run -e DOCKER_RUNTIME_ARGS --rm $dockerId $bsource)" == "[\"foo\", \"-test=bar\"]" ]
+
 ## dub file
 source='/++dub.sdl: name"foo"+/ void main() { import std.stdio; writeln("Hello World"); }'
 bsource=$(echo "$source" | base64 -w0)
