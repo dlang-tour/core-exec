@@ -52,7 +52,7 @@ command line parameter:
 
 ## Docker image
 
-The docker image gets built after every push to `master` and pushed to [DockerHub](https://hub.docker.com/r/dlang-tour/core-exec/).
+The docker image gets built after every push to `master` and pushed to [DockerHub](https://hub.docker.com/r/dlangtour/core-exec/).
 They are updated daily.
 The following images are available:
 
