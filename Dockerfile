@@ -13,6 +13,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 	libopenblas-dev \
 	libssl-dev xz-utils \
 	libclang-6.0-dev clang libxml2 zlib1g-dev \
+	# 'llvm' is needed to get llvm-symbolizer symbol-->source line information in e.g. AddressSanitizer output
+	llvm \
 	&& update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.gold" 20 \
 	&& update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.bfd" 10
 
