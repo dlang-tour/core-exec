@@ -1,6 +1,6 @@
 # Docker container for running rdmd
 
-[![Build Status](https://travis-ci.org/dlang-tour/core-exec.svg?branch=master)](https://travis-ci.org/dlang-tour/core-exec)
+[![Build Status](https://travis-ci.com/dlang-tour/core-exec.svg?branch=master)](https://travis-ci.com/dlang-tour/core-exec)
 
 This docker image provides the current version of the
 [rdmd](https://dlang.org) compiler of the D programming language.
