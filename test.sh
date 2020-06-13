@@ -67,6 +67,11 @@ source="/++dub.sdl: name\"foo\" \n dependency\"vibe-d\" version=\"*\"+/ void mai
 bsource=$(echo -e "$source" | base64 -w0)
 [ "$(docker run --rm "$dockerId" "$bsource")" == "null" ]
 
+## dub file with unittest
+source="/++dub.sdl: name\"foo\" \n dependency\"mir\" version=\"*\"+/ unittest { import mir.combinatorics, std.stdio; writeln([0, 1].permutations); } version(unittest) {} else { void main() { } } "
+bsource=$(echo -e "$source" | base64 -w0)
+[ "$(DOCKER_FLAGS="-unittest" docker run -e DOCKER_FLAGS --rm $dockerId $bsource)" == "[[0, 1], [1, 0]]" ]
+
 # Test -c
 source='void main() { static assert(0); }'
 bsource=$(echo $source | base64 -w0)
