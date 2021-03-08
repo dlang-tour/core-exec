@@ -75,7 +75,7 @@ if [[ $dockerId =~ "ldc" ]] ; then
     source=$'void main() { \n int a; \n int* ap = &a + 1; \n *ap = 0; }'
     #                                                        ^ line 4 column 2
     bsource=$(echo "$source" | base64 -w0)
-    DOCKER_FLAGS="-fsanitize=address -g -disable-fp-elim" docker run -e DOCKER_FLAGS --rm $dockerId $bsource | grep -q '#0 0x[0-9a-f]* in ..main [/a-z\.]*:4:2'
+    DOCKER_FLAGS="-fsanitize=address -g" docker run -e DOCKER_FLAGS --rm $dockerId $bsource | grep -q '#0 0x[0-9a-f]* in ..main [/a-z\.]*:4:2'
 fi
 
 # Check HTML output
