@@ -1,4 +1,4 @@
-FROM ubuntu:19.10
+FROM ubuntu:latest
 
 MAINTAINER "DLang Tour Community <tour@dlang.io>"
 
