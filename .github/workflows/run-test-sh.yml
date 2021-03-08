@@ -9,7 +9,7 @@ jobs:
       fail-fast: false # Finish other jobs on failure
       matrix:
         include:
-          - { version: dmd-nightly, exec: dmd   }
+          # - { version: dmd-nightly, exec: dmd   }
           - { version: dmd-beta,    exec: dmd   }
           - { version: dmd,         exec: dmd   }
           - { version: ldc-beta,    exec: ldmd2 }
