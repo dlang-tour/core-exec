@@ -31,12 +31,21 @@ RUN curl -fsS -o /tmp/install.sh https://dlang.org/install.sh
 RUN bash /tmp/install.sh -p /dlang install ${DLANG_VERSION}
 
 # Fetch obj2asm from an older release if it's not included in the selected release
-RUN if [ ! -f /dlang/*/linux/bin32/obj2asm ]; then \
-		echo "Fetching missing obj2asm from an older release!" \
-		&& bash /tmp/install.sh -p /tmp/dlang-tools install dmd-2.093.1 \
-		&& mv /tmp/dlang-tools/dmd-2.093.1/linux/bin32/obj2asm /dlang/*/linux/bin32 \
-		&& mv /tmp/dlang-tools/dmd-2.093.1/linux/bin64/obj2asm /dlang/*/linux/bin64 \
-		&& rm -r /tmp/dlang-tools ; \
+RUN set -eux ; \
+	if [ ! -f /dlang/*/linux/bin32/obj2asm ] ; \
+	then \
+		echo "Fetching missing obj2asm from an older release!" ; \
+		bash /tmp/install.sh -p /tmp/dlang-tools install dmd-2.093.1 ; \
+		\
+		if [ \"${DLANG_EXEC}\" = \"dmd\" ] ; \
+		then \
+			mv /tmp/dlang-tools/dmd-2.093.1/linux/bin32/obj2asm /dlang/*/linux/bin32/ ; \
+			mv /tmp/dlang-tools/dmd-2.093.1/linux/bin64/obj2asm /dlang/*/linux/bin64/ ; \
+		else \
+			mv /tmp/dlang-tools/dmd-2.093.1/linux/bin64/obj2asm /dlang/*/bin/ ; \
+		fi ; \
+		\
+		rm -r /tmp/dlang-tools ; \
 	fi
 
 COPY ./har /tmp/har/src
