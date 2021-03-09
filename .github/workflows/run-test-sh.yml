@@ -1,6 +1,11 @@
 name: run-test-shell
 
-on: [ pull_request, push ]
+on:
+  pull_request:
+
+  push:
+    branches:
+      - master
 
 jobs:
   main:
