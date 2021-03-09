@@ -30,7 +30,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: ${{ github.event_name == 'push' }}
-          load: true
+          load: ${{ github.event_name != 'push' }}
           tags: dlangtour/core-exec:${{ matrix.version }}
           build-args: |
             DLANG_VERSION=${{ matrix.version }}
