@@ -106,7 +106,7 @@ RUN cd /sandbox && for package_name in \
       	version="$(echo $package_name | grep : |cut -d: -f2)"; \
       	version="${version:-*}"; \
 		printf "/++dub.sdl: name\"foo\"\ndependency\"${package}\" version=\"${version}\"+/\n void main() {}" > foo.d; \
-		dub fetch "${package}" --version="${version}"; \
+		dub fetch "${package}@${version}"; \
 		dub build --single --compiler=${DLANG_EXEC} foo.d; \
 		version=$(dub describe ${package} | jq '.packages[0].version') ; \
 		echo "${package}:${version}" >> packages; \
