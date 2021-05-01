@@ -1,4 +1,0 @@
-#!/bin/bash
-TEMP=$(cat /tmp/dub_dmd_bin_path)
-export DUB_DMD_BIN_PATH=$(TEMP:+:)
-$*
