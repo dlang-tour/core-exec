@@ -47,9 +47,30 @@ elif [[ $args =~ .*-Xf=-* ]] ; then
     args="${args/-Xf=-/-Xf=- -c -o-}"
 fi
 
+if [[ $args =~ .*-unittest* ]] ; then
+    DUB_COMMAND="test"
+else
+    DUB_COMMAND="run"
+fi
+# If dub test, then check that dub version is greater than 1.25
+if [[ ${DUB_COMMAND} == "test" ]]; then
+    dub_version=$(dub --version | egrep -o [0-9]+\.[0-9]+\.[0-9])
+    dub_semver=( ${dub_version//./ } )
+    dub_major="${dub_semver[0]}"
+    dub_minor="${dub_semver[1]}"
+    if [ $dub_major -eq 1 ]; then
+        if [ $dub_minor -lt 25 ]; then
+            DUB_COMMAND="run"
+        fi
+    elif [ $dub_major -lt 1 ]; then
+        DUB_COMMAND="run"
+    fi
+fi
+
 if grep -q "^--- .*d" "$onlineapp" > /dev/null 2>&1  ; then
     mv "$onlineapp" onlineapp.har
     har_files="$(har --dir=$PWD "onlineapp.har")"
+
     if ! [[ "$args" =~ -c$|-c[[:space:]].* ]] ; then
         with_run="-run"
     else
@@ -66,7 +87,7 @@ if grep -q "^--- .*d" "$onlineapp" > /dev/null 2>&1  ; then
             other_modules+=("$c_out")
         done
         # TODO: cpp support
-        exec timeout -s KILL ${TIMEOUT:-30} dub run dpp -q --compiler=${DLANG_EXEC} --skip-registry=all -- --compiler=${DLANG_EXEC} -g $args "${other_modules[@]}" "${d_files[0]}" | tail -n100000
+        exec timeout -s KILL ${TIMEOUT:-30} dub ${DUB_COMMAND} dpp -q --compiler=${DLANG_EXEC} --skip-registry=all -- --compiler=${DLANG_EXEC} -g $args "${other_modules[@]}" "${d_files[0]}" | tail -n100000
         if [ "$with_run" == "-run" ] ; then
             exec timeout -s KILL ${TIMEOUT:-30} "${d_files[0]%%.*}" ${run_args} | tail -n10000
         fi
@@ -75,9 +96,9 @@ if grep -q "^--- .*d" "$onlineapp" > /dev/null 2>&1  ; then
         exec timeout -s KILL ${TIMEOUT:-30} bash -c "${DLANG_EXEC} -g $args "${d_files[@]:1}" $with_run "${d_files[0]}" ${run_args} | tail -n100000"
     fi
 elif  grep -qE "dub[.](sdl|json):" "$onlineapp" > /dev/null 2>&1  ; then
-    exec timeout -s KILL ${TIMEOUT:-30} dub -q --compiler=${DLANG_EXEC} --single --skip-registry=all "$onlineapp" ${run_args} | tail -n10000
+    exec timeout -s KILL ${TIMEOUT:-30} dub ${DUB_COMMAND} -q --compiler=${DLANG_EXEC} --single --skip-registry=all "$onlineapp" ${run_args} | tail -n10000
 elif [ ${onlineapp: -4} == ".dpp" ]; then
-    exec timeout -s KILL ${TIMEOUT:-30} dub run dpp -q --compiler=${DLANG_EXEC} --skip-registry=all -- --compiler=${DLANG_EXEC} "$onlineapp" | tail -n10000
+    exec timeout -s KILL ${TIMEOUT:-30} dub ${DUB_COMMAND} dpp -q --compiler=${DLANG_EXEC} --skip-registry=all -- --compiler=${DLANG_EXEC} "$onlineapp" | tail -n10000
     exec timeout -s KILL ${TIMEOUT:-30} ./onlineapp ${run_args} | tail -n10000
 else
     if ! [[ "$args" =~ -c$|-c[[:space:]].* ]] ; then
