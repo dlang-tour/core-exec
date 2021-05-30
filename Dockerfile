@@ -39,10 +39,10 @@ RUN set -eux ; \
 		\
 		if [ \"${DLANG_EXEC}\" = \"dmd\" ] ; \
 		then \
-			mv /tmp/dlang-tools/dmd-2.093.1/linux/bin32/obj2asm /dlang/*/linux/bin32/ ; \
-			mv /tmp/dlang-tools/dmd-2.093.1/linux/bin64/obj2asm /dlang/*/linux/bin64/ ; \
+			mv /tmp/dlang-tools/dmd-2.093.1/linux/bin32/obj2asm $(find -P /dlang/ -name bin32) ; \
+			mv /tmp/dlang-tools/dmd-2.093.1/linux/bin64/obj2asm $(find -P /dlang/ -name bin64) ; \
 		else \
-			mv /tmp/dlang-tools/dmd-2.093.1/linux/bin64/obj2asm /dlang/*/bin/ ; \
+			mv /tmp/dlang-tools/dmd-2.093.1/linux/bin64/obj2asm $(find -P /dlang/ -name bin) ; \
 		fi ; \
 		\
 		rm -r /tmp/dlang-tools ; \
