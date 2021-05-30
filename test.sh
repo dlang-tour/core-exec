@@ -12,7 +12,7 @@ trap 'err_report $LINENO' ERR
 grepOutput() {
     local output_file="command_output.tmp"
 
-    if ! "${@:1:(($# - 1))}" > $output_file
+    if ! "${@:1:(($# - 1))}" &> $output_file
     then
         echo "Command failed!"
 
