@@ -12,6 +12,10 @@ on:
 jobs:
   main:
     name: Test image
+
+    # Only run schedule for the main repository - not forks
+    if: ${{ github.event_name != 'schedule' || github.repository == 'dlang-tour/core-exec' }}
+
     strategy:
       fail-fast: true
       matrix:
