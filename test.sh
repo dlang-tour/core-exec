@@ -92,8 +92,8 @@ fi
 if [[ $dockerId =~ "ldc" ]] ; then
     source='void main() { int a; }'
     bsource=$(echo $source | base64 -w0)
-    grepOutput docker run -e DOCKER_FLAGS="-output-ll" --rm $dockerId $bsource "@ldc.register_dso"
-    grepOutput docker run -e DOCKER_FLAGS="-output-s" --rm $dockerId $bsource "ldc.register_dso:"
+    grepOutput docker run -e DOCKER_FLAGS="-output-ll" --rm $dockerId $bsource 'define i32 @_Dmain'
+    grepOutput docker run -e DOCKER_FLAGS="-output-s" --rm $dockerId $bsource '_Dmain:'
 fi
 
 # Check AddressSanitizer output with line numbers (LDC-only)
