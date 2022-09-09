@@ -7,10 +7,9 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 	curl \
 	gcc \
 	jq \
+	libatlas-base-dev \
 	libc-dev \
 	libevent-dev \
-	liblapack-dev \
-	libopenblas-dev \
 	libssl-dev xz-utils \
 	libclang-6.0-dev clang libxml2 zlib1g-dev \
 	# 'llvm' is needed to get llvm-symbolizer symbol-->source line information in e.g. AddressSanitizer output
