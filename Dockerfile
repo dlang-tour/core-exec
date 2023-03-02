@@ -78,43 +78,23 @@ RUN useradd -d /sandbox d-user
 RUN mkdir /sandbox && chown d-user:nogroup /sandbox
 USER d-user
 
-RUN cd /sandbox && for package_name in \
-		asdf \
-		mir-algorithm \
-		mir-blas \
-		mir-core \
-		mir-cpuid \
-		mir-integral \
-		mir-lapack \
-		mir-optim \
-		mir-random \
-		mir \
-		stdx-allocator \
-		lubeck \
-		numir \
-		vibe-d \
-		vibe-core \
-		dyaml \
-		libdparse \
-		emsi_containers \
-		collections \
-		automem \
-		pegged \
-		sumtype \
-		optional \
-		; do \
-      	package="$(echo $package_name | cut -d: -f1)"; \
-      	version="$(echo $package_name | grep : |cut -d: -f2)"; \
-      	version="${version:-*}"; \
-		printf "/++dub.sdl: name\"foo\"\ndependency\"${package}\" version=\"${version}\"+/\n void main() {}" > foo.d; \
-		dub fetch "${package}@${version}"; \
-		dub build --single --compiler=${DLANG_EXEC} foo.d; \
-		version=$(dub describe ${package} | jq '.packages[0].version') ; \
-		echo "${package}:${version}" >> packages; \
-		rm -f foo*; \
-		rm -rf .dub/build; \
-		dub fetch dpp && dub build --compiler=${DLANG_EXEC} dpp; \
-	done
+WORKDIR /sandbox
+RUN dub build --compiler=${DLANG_EXEC} dpp
+COPY packages.txt .
+RUN packages=$(cat packages.txt) && \
+  for package_name in $packages; do \
+    package="$(echo $package_name | cut -d: -f1)"; \
+    version="$(echo $package_name | grep : |cut -d: -f2)"; \
+    version="${version:-*}"; \
+    echo -e '/++dub.sdl:\nname "foo"' > foo.d; \
+    echo -e "dependency \"${package}\" version=\"${version}\"" >> foo.d; \
+    echo -e '+/\nvoid main() {}' >> foo.d; \
+    dub build --single --compiler=${DLANG_EXEC} foo.d; \
+    version=$(dub describe ${package} | jq '.packages[0].version'); \
+    echo "${package}:${version}" >> packages; \
+    rm -f foo*; \
+    rm -rf .dub/build; \
+  done
 
 USER root
 COPY entrypoint.sh /entrypoint.sh
