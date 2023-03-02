@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM ubuntu:latest as base
 
 LABEL MAINTAINER="DLang Tour Community <tour@dlang.io>"
 
@@ -21,7 +21,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 # set default libclang version
 RUN ln -s /usr/lib/x86_64-linux-gnu/libclang-*.so.1 /usr/lib/x86_64-linux-gnu/libclang.so \
   && test -e /usr/lib/x86_64-linux-gnu/libclang.so
-
+FROM base
 ARG DLANG_VERSION=dmd
 ARG DLANG_EXEC=dmd
 ENV DLANG_VERSION=$DLANG_VERSION
