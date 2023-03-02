@@ -3,20 +3,20 @@ FROM ubuntu:latest
 LABEL MAINTAINER="DLang Tour Community <tour@dlang.io>"
 
 RUN apt-get update && apt-get install --no-install-recommends -y \
-	ca-certificates gpg \
-	curl \
-	gcc \
-	jq \
-	libc-dev \
-	libevent-dev \
-	liblapack-dev \
-	libopenblas-dev \
-	libssl-dev xz-utils \
-	clang libxml2 zlib1g-dev \
-	# 'llvm' is needed to get llvm-symbolizer symbol-->source line information in e.g. AddressSanitizer output
-	llvm \
-	&& update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.gold" 20 \
-	&& update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.bfd" 10
+  ca-certificates gpg \
+  curl \
+  gcc \
+  jq \
+  libc-dev \
+  libevent-dev \
+  liblapack-dev \
+  libopenblas-dev \
+  libssl-dev xz-utils \
+  clang libxml2 zlib1g-dev \
+  # 'llvm' is needed to get llvm-symbolizer symbol-->source line information in e.g. AddressSanitizer output
+  llvm \
+  && update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.gold" 20 \
+  && update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.bfd" 10
 
 # set default libclang version
 RUN ln -s /usr/lib/x86_64-linux-gnu/libclang-*.so.1 /usr/lib/x86_64-linux-gnu/libclang.so \
@@ -33,21 +33,20 @@ RUN bash /tmp/install.sh -p /dlang install ${DLANG_VERSION}
 
 # Fetch obj2asm from an older release if it's not included in the selected release
 RUN set -eux ; \
-	if [ ! -f /dlang/*/linux/bin32/obj2asm ] ; \
-	then \
-		echo "Fetching missing obj2asm from an older release!" ; \
-		bash /tmp/install.sh -p /tmp/dlang-tools install dmd-2.093.1 ; \
-		\
-		if [ \"${DLANG_EXEC}\" = \"dmd\" ] ; \
-		then \
-			mv /tmp/dlang-tools/dmd-2.093.1/linux/bin32/obj2asm $(find -P /dlang/ -name bin32) ; \
-			mv /tmp/dlang-tools/dmd-2.093.1/linux/bin64/obj2asm $(find -P /dlang/ -name bin64) ; \
-		else \
-			mv /tmp/dlang-tools/dmd-2.093.1/linux/bin64/obj2asm $(find -P /dlang/ -name bin) ; \
-		fi ; \
-		\
-		rm -r /tmp/dlang-tools ; \
-	fi
+  if [ ! -f /dlang/*/linux/bin32/obj2asm ] ; \
+  then \
+    echo "Fetching missing obj2asm from an older release!" ; \
+    bash /tmp/install.sh -p /tmp/dlang-tools install dmd-2.093.1 ; \
+    if [ "${DLANG_EXEC}" = "dmd" ] ; \
+    then \
+      mv /tmp/dlang-tools/dmd-2.093.1/linux/bin32/obj2asm $(find -P /dlang/ -name bin32) ; \
+      mv /tmp/dlang-tools/dmd-2.093.1/linux/bin64/obj2asm $(find -P /dlang/ -name bin64) ; \
+    else \
+      mv /tmp/dlang-tools/dmd-2.093.1/linux/bin64/obj2asm $(find -P /dlang/ -name bin) ; \
+    fi ; \
+    \
+    rm -r /tmp/dlang-tools ; \
+  fi
 
 COPY ./har /tmp/har/src
 SHELL ["/bin/bash", "-c"]
@@ -99,7 +98,7 @@ RUN packages=$(cat packages.txt) && \
 USER root
 COPY entrypoint.sh /entrypoint.sh
 RUN mv /sandbox/packages /installed_packages; \
-	chmod 555 /installed_packages
+  chmod 555 /installed_packages
 USER d-user
 
 ENTRYPOINT [ "/entrypoint.sh" ]
