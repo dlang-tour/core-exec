@@ -1,0 +1,8 @@
+.dockerignore
+.editorconfig
+.git
+.gitmodules
+.gitignore
+Dockerfile
+test.sh
+README.md
