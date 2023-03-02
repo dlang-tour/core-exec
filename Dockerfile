@@ -12,14 +12,15 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 	liblapack-dev \
 	libopenblas-dev \
 	libssl-dev xz-utils \
-	libclang-12-dev clang libxml2 zlib1g-dev \
+	clang libxml2 zlib1g-dev \
 	# 'llvm' is needed to get llvm-symbolizer symbol-->source line information in e.g. AddressSanitizer output
 	llvm \
 	&& update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.gold" 20 \
 	&& update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.bfd" 10
 
-# set libclang6 as default
-RUN ln -s /usr/lib/x86_64-linux-gnu/libclang-6.0.so /usr/lib/x86_64-linux-gnu/libclang.so
+# set default libclang version
+RUN ln -s /usr/lib/x86_64-linux-gnu/libclang-*.so.1 /usr/lib/x86_64-linux-gnu/libclang.so \
+  && test -e /usr/lib/x86_64-linux-gnu/libclang.so
 
 ARG DLANG_VERSION=dmd
 ARG DLANG_EXEC=dmd
