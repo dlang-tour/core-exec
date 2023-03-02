@@ -11,8 +11,7 @@ mir
 stdx-allocator
 lubeck
 numir
-vibe-d
-vibe-core
+vibe-d:0.9.6-beta.1
 dyaml
 libdparse
 emsi_containers
