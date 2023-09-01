@@ -96,7 +96,7 @@ if grep -q "^--- .*d" "$onlineapp" > /dev/null 2>&1  ; then
         exec timeout -s KILL ${TIMEOUT:-30} bash -c "${DLANG_EXEC} -g $args "${d_files[@]:1}" $with_run "${d_files[0]}" ${run_args} | tail -n100000"
     fi
 elif  grep -qE "dub[.](sdl|json):" "$onlineapp" > /dev/null 2>&1  ; then
-    exec timeout -s KILL ${TIMEOUT:-30} dub ${DUB_COMMAND} -v --compiler=${DLANG_EXEC} --single --skip-registry=all "$onlineapp" ${run_args} | tail -n10000
+    exec timeout -s KILL ${TIMEOUT:-30} dub ${DUB_COMMAND} -q --compiler=${DLANG_EXEC} --single --skip-registry=all "$onlineapp" ${run_args} | tail -n10000
 elif [ ${onlineapp: -4} == ".dpp" ]; then
     exec timeout -s KILL ${TIMEOUT:-30} dub ${DUB_COMMAND} dpp -q --compiler=${DLANG_EXEC} --skip-registry=all -- --compiler=${DLANG_EXEC} "$onlineapp" | tail -n10000
     exec timeout -s KILL ${TIMEOUT:-30} ./onlineapp ${run_args} | tail -n10000

@@ -84,13 +84,13 @@ bsource=$(echo $source | base64 -w0)
 exactOutput env DOCKER_RUNTIME_ARGS="foo -test=bar" docker run -e DOCKER_RUNTIME_ARGS --rm $dockerId $bsource "[\"foo\", \"-test=bar\"]"
 
 ## dub file
-# source='/++dub.sdl: name"foo"+/ void main() { import std.stdio; writeln("Hello World"); }'
-# bsource=$(echo "$source" | base64 -w0)
-# exactOutput docker run --rm $dockerId "$bsource" "Hello World"
+source='/++dub.sdl: name"foo"+/ void main() { import std.stdio; writeln("Hello World"); }'
+bsource=$(echo "$source" | base64 -w0)
+exactOutput docker run --rm $dockerId "$bsource" "Hello World"
 
-# source="/++dub.sdl: name\"foo\" \n dependency\"mir\" version=\"*\"+/ void main() { import mir.combinatorics, std.stdio; writeln([0, 1].permutations); }"
-# bsource=$(echo -e "$source" | base64 -w0)
-# exactOutput docker run --rm $dockerId "$bsource" "[[0, 1], [1, 0]]"
+source="/++dub.sdl: name\"foo\" \n dependency\"mir\" version=\"*\"+/ void main() { import mir.combinatorics, std.stdio; writeln([0, 1].permutations); }"
+bsource=$(echo -e "$source" | base64 -w0)
+exactOutput docker run --rm $dockerId "$bsource" "[[0, 1], [1, 0]]"
 
 source="/++dub.sdl: name\"foo\" \n dependency\"vibe-d\" version=\">=0.9.7\"+/ void main() { import vibe.d, std.stdio; Json a; a.writeln; }"
 bsource=$(echo -e "$source" | base64 -w0)
