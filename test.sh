@@ -63,7 +63,7 @@ source="/++dub.sdl: name\"foo\" \n dependency\"mir\" version=\"*\"+/ void main()
 bsource=$(echo -e "$source" | base64 -w0)
 [ "$(docker run --rm "$dockerId" "$bsource")" == "[[0, 1], [1, 0]]" ]
 
-source="/++dub.sdl: name\"foo\" \n dependency\"vibe-d\" version=\"*\"+/ void main() { import vibe.d, std.stdio; Json a; a.writeln; }"
+source="/++dub.sdl: name\"foo\" \n dependency\"vibe-d\" version=\">=0.9.7\"+/ void main() { import vibe.d, std.stdio; Json a; a.writeln; }"
 bsource=$(echo -e "$source" | base64 -w0)
 [ "$(docker run --rm "$dockerId" "$bsource")" == "null" ]
 
