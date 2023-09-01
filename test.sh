@@ -34,13 +34,9 @@ exactOutput() {
     local output_file="command_output.tmp"
     local expect_file="command_expect.tmp"
 
-    if [ -z "${@:$#}" ]; then
-        echo -n "" > $expect_file
-    else
-        echo "${@:$#}" > $expect_file
-    fi
+    echo -n "${@:$#}" | xargs > $expect_file
 
-    if ! "${@:1:(($# - 1))}" &> $output_file
+    if ! "${@:1:(($# - 1))}" | xargs > $output_file
     then
         echo "Command failed!"
 
