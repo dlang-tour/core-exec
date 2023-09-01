@@ -90,16 +90,16 @@ exactOutput docker run --rm $dockerId "$bsource" "Hello World"
 
 source="/++dub.sdl: name\"foo\" \n dependency\"mir\" version=\"*\"+/ void main() { import mir.combinatorics, std.stdio; writeln([0, 1].permutations); }"
 bsource=$(echo -e "$source" | base64 -w0)
-exactOutput docker run --rm $dockerId "$bsource" "[[0, 1], [1, 0]]"
+grepOutput docker run --rm $dockerId "$bsource" "[[0, 1], [1, 0]]"
 
-source="/++dub.sdl: name\"foo\" \n dependency\"vibe-d\" version=\">=0.9.7\"+/ void main() { import vibe.d, std.stdio; Json a; a.writeln; }"
+source="/++dub.sdl: name\"foo\" \n dependency\"vibe-d\" version=\">=0.9.7\"+/ void main() { import vibe.d, std.stdio; auto a = Json(\"hello world\"); a.writeln; }"
 bsource=$(echo -e "$source" | base64 -w0)
-exactOutput docker run --rm $dockerId "$bsource" "null"
+grepOutput docker run --rm $dockerId "$bsource" "\"hello world\""
 
 ## dub file with unittest
 source="/++dub.sdl: name\"foo\" \n dependency\"mir\" version=\"*\"+/ unittest { import mir.combinatorics, std.stdio; writeln([0, 1].permutations); } version(unittest) {} else { void main() { } } "
 bsource=$(echo -e "$source" | base64 -w0)
-exactOutput env DOCKER_FLAGS="-unittest" docker run -e DOCKER_FLAGS --rm $dockerId $bsource "[[0, 1], [1, 0]]"
+grepOutput env DOCKER_FLAGS="-unittest" docker run -e DOCKER_FLAGS --rm $dockerId $bsource "[[0, 1], [1, 0]]"
 
 # Test -c
 source='void main() { static assert(0); }'
@@ -171,7 +171,7 @@ void main() {
 EOF
 )
 bsource=$(echo "$source" | base64 -w0)
-exactOutput docker run --rm $dockerId $bsource)" "Hello World"
+exactOutput docker run --rm $dockerId $bsource "Hello World"
 
 # Check dpp Hello World with HAR
 source=$(cat <<EOF
@@ -197,4 +197,4 @@ void main() {
 EOF
 )
 bsource=$(echo "$source" | base64 -w0)
-exactOutput docker run --rm $dockerId $bsource)" "30"
+exactOutput docker run --rm $dockerId $bsource "30"
