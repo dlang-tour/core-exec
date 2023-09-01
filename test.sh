@@ -30,10 +30,39 @@ grepOutput() {
     exit 1
 }
 
+exactOutput() {
+    local output_file="command_output.tmp"
+    local expect_file="command_expect.tmp"
+
+    if [ -z "${@:$#}" ]; then
+        echo -n "" > $expect_file
+    else
+        echo "${@:$#}" > $expect_file
+    fi
+
+    if ! "${@:1:(($# - 1))}" &> $output_file
+    then
+        echo "Command failed!"
+
+    elif ! diff -up $output_file $expect_file
+    then
+        echo "Output didn't match expected test"
+    else
+        rm $output_file
+        rm $expect_file
+        return 0
+    fi
+
+    cat $output_file
+    rm $output_file
+    rm $expect_file
+    exit 1
+}
+
 # simple hello world
 source='void main() { import std.stdio; writeln("Hello World"); }'
 bsource=$(echo $source | base64 -w0)
-[ "$(docker run --rm $dockerId $bsource)" == "Hello World" ]
+exactOutput docker run --rm $dockerId $bsource "$(printf "Hello World\n")"
 
 # stdin
 source='void main() { import std.algorithm, std.stdio; stdin.byLine.each!writeln;}'
@@ -45,32 +74,32 @@ output="$(docker run --rm $dockerId $bsource $bstdin)"
 # custom arguments
 source='void main() { import std.stdio; version(Foo) writeln("Hello World"); }'
 bsource=$(echo $source | base64 -w0)
-[ "$(DOCKER_FLAGS="-version=Fooo" docker run -e DOCKER_FLAGS --rm $dockerId $bsource)" == "" ]
+exactOutput env DOCKER_FLAGS="-version=Fooo" docker run -e DOCKER_FLAGS --rm $dockerId $bsource ""
 [ "$(DOCKER_FLAGS="-version=Foo" docker run -e DOCKER_FLAGS --rm $dockerId $bsource)" != "Hello world" ]
 [ "$(DOCKER_FLAGS="-version=Bar -version=Foo" docker run -e DOCKER_FLAGS --rm $dockerId $bsource)" != "Hello world" ]
 
 # test runtime args
 source='void main(string[] args) { import std.stdio; writeln(args[1..$]); }'
 bsource=$(echo $source | base64 -w0)
-[ "$(DOCKER_RUNTIME_ARGS="foo -test=bar" docker run -e DOCKER_RUNTIME_ARGS --rm $dockerId $bsource)" == "[\"foo\", \"-test=bar\"]" ]
+exactOutput env DOCKER_RUNTIME_ARGS="foo -test=bar" docker run -e DOCKER_RUNTIME_ARGS --rm $dockerId $bsource "[\"foo\", \"-test=bar\"]"
 
 ## dub file
 source='/++dub.sdl: name"foo"+/ void main() { import std.stdio; writeln("Hello World"); }'
 bsource=$(echo "$source" | base64 -w0)
-[ "$(docker run --rm $dockerId $bsource)" == "Hello World" ]
+exactOutput docker run --rm $dockerId "$bsource" "Hello World"
 
 source="/++dub.sdl: name\"foo\" \n dependency\"mir\" version=\"*\"+/ void main() { import mir.combinatorics, std.stdio; writeln([0, 1].permutations); }"
 bsource=$(echo -e "$source" | base64 -w0)
-[ "$(docker run --rm "$dockerId" "$bsource")" == "[[0, 1], [1, 0]]" ]
+exactOutput docker run --rm $dockerId "$bsource" "[[0, 1], [1, 0]]"
 
 source="/++dub.sdl: name\"foo\" \n dependency\"vibe-d\" version=\">=0.9.7\"+/ void main() { import vibe.d, std.stdio; Json a; a.writeln; }"
 bsource=$(echo -e "$source" | base64 -w0)
-[ "$(docker run --rm "$dockerId" "$bsource")" == "null" ]
+exactOutput docker run --rm $dockerId "$bsource" "null"
 
 ## dub file with unittest
 source="/++dub.sdl: name\"foo\" \n dependency\"mir\" version=\"*\"+/ unittest { import mir.combinatorics, std.stdio; writeln([0, 1].permutations); } version(unittest) {} else { void main() { } } "
 bsource=$(echo -e "$source" | base64 -w0)
-[ "$(DOCKER_FLAGS="-unittest" docker run -e DOCKER_FLAGS --rm $dockerId $bsource)" == "[[0, 1], [1, 0]]" ]
+exactOutput env DOCKER_FLAGS="-unittest" docker run -e DOCKER_FLAGS --rm $dockerId $bsource "[[0, 1], [1, 0]]"
 
 # Test -c
 source='void main() { static assert(0); }'
@@ -142,7 +171,7 @@ void main() {
 EOF
 )
 bsource=$(echo "$source" | base64 -w0)
-[ "$(docker run --rm $dockerId $bsource)" == "Hello World" ]
+exactOutput docker run --rm $dockerId $bsource)" "Hello World"
 
 # Check dpp Hello World with HAR
 source=$(cat <<EOF
@@ -168,4 +197,4 @@ void main() {
 EOF
 )
 bsource=$(echo "$source" | base64 -w0)
-[ "$(docker run --rm $dockerId $bsource)" == "30" ]
+exactOutput docker run --rm $dockerId $bsource)" "30"
