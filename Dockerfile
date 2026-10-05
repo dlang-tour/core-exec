@@ -1,4 +1,4 @@
-FROM ubuntu:latest as base
+FROM ubuntu:26.04 AS base
 
 LABEL MAINTAINER="DLang Tour Community <tour@dlang.io>"
 
@@ -12,7 +12,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   liblapack-dev \
   libopenblas-dev \
   libssl-dev xz-utils \
-  clang libxml2 zlib1g-dev \
+  binutils-gold \
+  clang libxml2-16 zlib1g-dev \
   # 'llvm' is needed to get llvm-symbolizer symbol-->source line information in e.g. AddressSanitizer output
   llvm \
   && update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.gold" 20 \
