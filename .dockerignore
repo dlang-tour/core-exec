@@ -5,4 +5,5 @@
 .gitignore
 Dockerfile
 test.sh
+build-test.sh
 README.md

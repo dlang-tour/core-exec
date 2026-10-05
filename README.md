@@ -50,6 +50,13 @@ command line parameter:
 
 ![image](https://user-images.githubusercontent.com/4370550/28495813-0f497240-6f5b-11e7-9108-18e5ad6366c5.png)
 
+## Local build
+
+`./build-test.sh` builds the CI images and runs `./test.sh` on each one.
+Pass image names to build a subset:
+
+    ./build-test.sh dmd ldc
+
 ## Docker image
 
 The docker image gets built after every push to `master` and pushed to [DockerHub](https://hub.docker.com/r/dlangtour/core-exec/).
