@@ -28,9 +28,17 @@ ARG DLANG_EXEC=dmd
 ENV DLANG_VERSION=$DLANG_VERSION
 ENV DLANG_EXEC=$DLANG_EXEC
 
-# Download and run the install script
-RUN curl -fsS -o /tmp/install.sh https://dlang.org/install.sh
-RUN bash /tmp/install.sh -p /dlang install ${DLANG_VERSION}
+# CI sets this to the UTC date. A new day rebuilds from the compiler
+# install down, which is what picks up dmd/ldc and dub version=*.
+# The apt stage above does not use this value, so it stays cached.
+# Local builds leave it at the default and reuse this layer.
+ARG COMPILER_CACHE_EPOCH=stable
+
+# Download and install the compiler. Referencing the epoch here makes
+# it part of this layer's cache key.
+RUN echo "compiler-cache-epoch=${COMPILER_CACHE_EPOCH}" \
+ && curl -fsS -o /tmp/install.sh https://dlang.org/install.sh \
+ && bash /tmp/install.sh -p /dlang install ${DLANG_VERSION}
 
 # Fetch obj2asm from an older release if it's not included in the selected release
 RUN set -eux ; \
@@ -49,17 +57,12 @@ RUN set -eux ; \
     rm -r /tmp/dlang-tools ; \
   fi
 
-COPY ./har /tmp/har/src
-SHELL ["/bin/bash", "-c"]
-RUN source /dlang/$(ls -tr /dlang | tail -n1)/activate; \
-  echo $PATH && \
-  $DMD -of=/tmp/har/src/har -g -debug /tmp/har/src/harmain.d /tmp/har/src/archive/har.d
-
-# Clean up to keep the image size minimal
+# Clean up to keep the image size minimal.
+# har is compiled after the dub prefetch, so this layer stays cached
+# when only har changes.
 RUN rm -f /dlang/d-keyring.gpg \
  && rm -rf /dlang/dub* \
  && ln -s /dlang/$(ls -tr /dlang | tail -n1) /dlang/${DLANG_VERSION} \
- && mkdir -p /dlang/har && cp /tmp/har/src/har /dlang/har/har && rm -rf /tmp/har \
  && rm /tmp/install.sh \
  && rm /dlang/install.sh \
  && apt-get auto-remove -y xz-utils \
@@ -81,6 +84,8 @@ USER d-user
 WORKDIR /sandbox
 RUN dub build --compiler=${DLANG_EXEC} dpp
 COPY packages.txt .
+# The prefetch loop uses `echo -e`, which dash does not support.
+SHELL ["/bin/bash", "-c"]
 RUN packages=$(cat packages.txt) && \
   for package_name in $packages; do \
     package="$(echo $package_name | cut -d: -f1)"; \
@@ -100,6 +105,19 @@ USER root
 COPY entrypoint.sh /entrypoint.sh
 RUN mv /sandbox/packages /installed_packages; \
   chmod 555 /installed_packages
+
+# After the prefetch on purpose: editing har must not rebuild dpp
+# or re-download the packages above. /dlang is mode 555; root can
+# still create /dlang/har.
+COPY ./har /tmp/har/src
+RUN source /dlang/${DLANG_VERSION}/activate; \
+  echo "$PATH" && \
+  "$DMD" -of=/tmp/har/src/har -g -debug \
+    /tmp/har/src/harmain.d /tmp/har/src/archive/har.d && \
+  mkdir -p /dlang/har && \
+  cp /tmp/har/src/har /dlang/har/har && \
+  rm -rf /tmp/har && \
+  chmod 555 /dlang/har /dlang/har/har
 USER d-user
 
 ENTRYPOINT [ "/entrypoint.sh" ]

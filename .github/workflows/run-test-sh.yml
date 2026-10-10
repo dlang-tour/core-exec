@@ -55,6 +55,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # UTC date, shared by pull requests, pushes, and the daily
+      # schedule. The next day changes the value, so the compiler
+      # install and the dub prefetch run again. Apt stays cached.
+      - name: Compiler cache epoch
+        id: epoch
+        run: echo "value=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+
       - name: Build image
         uses: docker/build-push-action@v7
         with:
@@ -68,6 +75,7 @@ jobs:
           build-args: |
             DLANG_VERSION=${{ matrix.version }}
             DLANG_EXEC=${{ matrix.exec }}
+            COMPILER_CACHE_EPOCH=${{ steps.epoch.outputs.value }}
 
       - name: Test image
         run: ./test.sh "${{ steps.image.outputs.name }}:${{ matrix.version }}"
