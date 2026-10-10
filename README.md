@@ -61,6 +61,18 @@ Pass image names to build a subset:
 
 The docker image gets built after every push to `master` and pushed to [GHCR](https://github.com/dlang-tour/core-exec/pkgs/container/core-exec).
 They are updated daily.
+
+Pull a tag:
+
+    $ docker pull ghcr.io/dlang-tour/core-exec:dmd
+
+If the package is private, log in first with a GitHub personal access
+token that has the `read:packages` scope. The username is your GitHub
+username, and the password is the token:
+
+    $ docker login ghcr.io
+    $ docker pull ghcr.io/dlang-tour/core-exec:dmd
+
 The following images are available:
 
 - `ghcr.io/dlang-tour/core-exec:dmd-nightly`
